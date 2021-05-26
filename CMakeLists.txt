@@ -15,39 +15,12 @@ function(RUN_CMAKE pathtocmakelists)
     endif()
 endfunction()
 # Download and unpack library at configure time
-function(SETUP_LIBRARY lib_name lib_source usemake)
+function(SETUP_LIBRARY lib_name lib_source tag)
+    # Copy the downloading CMakeLists.txt into a folder
     configure_file(CMakeLists.txt.in ${lib_name}-download/CMakeLists.txt)
-    if (usemake)
-        # Use make
-        execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-                RESULT_VARIABLE result
-                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-download)
-        if (result)
-            message(FATAL_ERROR "CMake step for ${lib_name} failed: ${result}")
-        endif ()
-        execute_process(COMMAND ./configure
-                RESULT_VARIABLE result
-                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-src )
-        if(result)
-            message(FATAL_ERROR "configure step for ${lib_name} failed: ${result}")
-        endif()
-        execute_process(COMMAND make
-                RESULT_VARIABLE result
-                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-src )
-        if(result)
-            message(FATAL_ERROR "make step for ${lib_name} failed: ${result}")
-        endif()
-        execute_process(COMMAND make install
-                RESULT_VARIABLE result
-                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-src )
-        if(result)
-            message(FATAL_ERROR "make step for ${lib_name} failed: ${result}")
-        endif()
-    else()
-        # Use Cmake
-        RUN_CMAKE(${lib_name}-download)
-    endif()
 
+    # Run it
+    RUN_CMAKE(${lib_name}-download)
 
     # Add libary directly to our build. This defines the targets
     add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-src
@@ -81,7 +54,15 @@ endfunction()
 SETUP_LIBRARY_SVN(libmpg123 svn://scm.orgis.org/mpg123/trunk ports/cmake)
 
 
-SETUP_LIBRARY(sdl https://github.com/SDL-mirror/SDL.git FALSE)
+SETUP_LIBRARY(sdl https://github.com/SDL-mirror/SDL.git master)
+#SET(SDL2_DIR ${CMAKE_CURRENT_BINARY_DIR}/sdl-bin)
+SET(SDL2W_SDL2_DIR ${CMAKE_CURRENT_BINARY_DIR}/sdl-bin/CMakeFiles/Export/lib/cmake/SDL2)
+#list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_BINARY_DIR}/sdl-bin/CMakeFiles/Export/lib/cmake/SDL2")
+#list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_BINARY_DIR}/sdl-src")
+#list(APPEND CMAKE_MODULE_PATH /path/to/your/SDL2/modules)
+#find_package(SDL2 REQUIRED)
+SETUP_LIBRARY(sdl_ttf https://github.com/libsdl-org/SDL_ttf.git release-2.0.15)
+SETUP_LIBRARY(sdl_image https://github.com/libsdl-org/SDL_image.git FALSE)
 #SETUP_LIBRARY(libmpg123 https://github.com/gypified/libmpg123.git TRUE)
 #SETUP_LIBRARY(flac https://github.com/xiph/flac.git FALSE)
 #SET(ANDROID ON)

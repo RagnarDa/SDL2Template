@@ -8,7 +8,7 @@ project(${lib_name}-download NONE)
 include(ExternalProject)
 ExternalProject_Add(${lib_name}
         GIT_REPOSITORY    ${lib_source}
-        GIT_TAG           master
+        GIT_TAG           ${tag}
         SOURCE_DIR        "${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-src"
         BINARY_DIR        "${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-build"
         CONFIGURE_COMMAND ""
