@@ -1,0 +1,18 @@
+# For downloading googletest
+# https://github.com/google/googletest/blob/master/googletest/README.md
+
+cmake_minimum_required(VERSION 2.8.2)
+
+project(${lib_name}-download NONE)
+
+include(ExternalProject)
+ExternalProject_Add(${lib_name}
+        GIT_REPOSITORY    ${lib_source}
+        GIT_TAG           master
+        SOURCE_DIR        "${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-src"
+        BINARY_DIR        "${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-build"
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND     ""
+        INSTALL_COMMAND   ""
+        TEST_COMMAND      ""
+        )
