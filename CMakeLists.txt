@@ -87,10 +87,43 @@ SETUP_LIBRARY(sdl https://github.com/SDL-mirror/SDL.git FALSE)
 #SET(ANDROID ON)
 #set(SUPPORT_OGG OFF CACHE BOOL "" FORCE)
 # Essentially make our own CMakeLists.txt for the mixer
+# Might probably break when it is updated.
+SET(lib_name sdl_mixer)
+SET(lib_source https://github.com/SDL-mirror/SDL_mixer.git)
 configure_file(CMakeLists.txt.in sdl_mixer-download/CMakeLists.txt)
+RUN_CMAKE(sdl_mixer-download)
 #SETUP_LIBRARY(sdl_mixer https://github.com/SDL-mirror/SDL_mixer.git FALSE)
+project(SDL_mixer C)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/include ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs)
+
+add_library(SDL2_mixer SHARED)
 
 
+target_sources(SDL2_mixer PRIVATE
+        ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/effect_position.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/effects_internal.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/effect_stereoreverse.c
+        ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/mixer.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/music.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/utils.c
+        ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/load_aiff.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/load_voc.c
+        ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/music_cmd.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/music_flac.c
+        ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/music_fluidsynth.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/music_mad.c
+        ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/music_mikmod.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/music_modplug.c
+        ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/music_mpg123.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/music_nativemidi.c
+        ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/mp3utils.c
+        ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/music_ogg.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/music_opus.c
+        ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/music_timidity.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/music_wav.c)
+
+add_definitions(-DMUSIC_MP3_MPG123)
+#add_subdirectory(external/mpg123-1.25.13)
+target_link_libraries(SDL2_mixer PRIVATE libmpg123.a libsyn123.a libout123.a)
+target_include_directories(SDL2_mixer PUBLIC .)
+target_link_libraries(SDL2_mixer PRIVATE SDL2)
+
+
+# Add libary directly to our build. This defines the targets
+add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-src
+        ${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-build
+        EXCLUDE_FROM_ALL)
+
+include_directories("${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-src/include")
 
 
 project(SDL2Template)
