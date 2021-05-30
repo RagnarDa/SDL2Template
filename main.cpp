@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     }
     Mix_FadeInMusic(music,0,2000);
 
-    /* Inint TTF. */
+    /* Init TTF. */
     TTF_Init();
     TTF_Font* font = TTF_OpenFont("../JosefinSans-Regular.ttf", 24);
     if (font == NULL) {
@@ -80,18 +80,17 @@ int main(int argc, char *argv[])
     SDL_Surface* surface = TTF_RenderText_Solid(font, buff, textColor);
     SDL_Texture * fonttexture = SDL_CreateTextureFromSurface(renderer, surface);;
     SDL_Rect fontrect;
-    SDL_FreeSurface(surface);
+//    SDL_FreeSurface(surface);
     fontrect.x = 100;
     fontrect.y = 100;
     fontrect.w = 200;
     fontrect.h = 200;
 
     SDL_RenderCopy(renderer, fonttexture, NULL, &fontrect);
+    SDL_RenderPresent(renderer);
 
     IMG_Init(IMG_INIT_PNG) ;
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-    SDL_RenderClear(renderer);
 
     SDL_Event e;
     bool quit = false;
@@ -108,7 +107,6 @@ int main(int argc, char *argv[])
             }
         }
     }
-    Mix_FreeMusic(music);
 
     if(Mix_PlayingMusic()) {
         Mix_FadeOutMusic(1500);
