@@ -103,7 +103,16 @@ int main(int argc, char *argv[])
     imagerect.y = 200;
     imagerect.w = 200;
     imagerect.h = 200;
-    SDL_RenderCopy(renderer, imagetexture, NULL, &imagerect);
+    SDL_Rect srcrect;
+    const int goblinwidth = 704/11;
+    const int goblinheight = 320/5;
+    const int goblinanimx = 0;
+    const int goblinanimy = 0;
+    srcrect.x = goblinwidth * goblinanimx;
+    srcrect.y = goblinheight * goblinanimy;
+    srcrect.w = goblinwidth;
+    srcrect.h = goblinheight;
+    SDL_RenderCopy(renderer, imagetexture, &srcrect, &imagerect);
 
     /* Draw */
     SDL_RenderPresent(renderer);
