@@ -5,3 +5,7 @@ https://surt-r.itch.io/realms-of-arkania-inspired-sketches
 Font:
 Josefin Sans - Santiago Orozco
 https://www.1001freefonts.com/josefin-sans.font
+
+Image:
+William.Thompsonj - [LPC] Goblin
+https://opengameart.org/content/lpc-goblin

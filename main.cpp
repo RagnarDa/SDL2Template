@@ -72,25 +72,41 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
+    /* Clear screen */
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     SDL_RenderClear(renderer);
+
+
     char buff[100];
     std::sprintf(buff, "Hello World!", 1);
     SDL_Color textColor = { 255, 255, 255, 0 };
     SDL_Surface* surface = TTF_RenderText_Solid(font, buff, textColor);
     SDL_Texture * fonttexture = SDL_CreateTextureFromSurface(renderer, surface);;
     SDL_Rect fontrect;
-//    SDL_FreeSurface(surface);
     fontrect.x = 100;
     fontrect.y = 100;
     fontrect.w = 200;
     fontrect.h = 200;
 
     SDL_RenderCopy(renderer, fonttexture, NULL, &fontrect);
-    SDL_RenderPresent(renderer);
 
+    /* Display image */
     IMG_Init(IMG_INIT_PNG) ;
+    SDL_Surface *image = IMG_Load("../goblin.png");
+    if(!image) {
+        printf("IMG_Load: %s\n", IMG_GetError());
+        exit(1);
+    }
+    SDL_Texture * imagetexture = SDL_CreateTextureFromSurface(renderer, image);;
+    SDL_Rect imagerect;
+    imagerect.x = 200;
+    imagerect.y = 200;
+    imagerect.w = 200;
+    imagerect.h = 200;
+    SDL_RenderCopy(renderer, imagetexture, NULL, &imagerect);
 
+    /* Draw */
+    SDL_RenderPresent(renderer);
 
     SDL_Event e;
     bool quit = false;
