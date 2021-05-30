@@ -79,14 +79,14 @@ int main(int argc, char *argv[])
     SDL_Color textColor = { 255, 255, 255, 0 };
     SDL_Surface* surface = TTF_RenderText_Solid(font, buff, textColor);
     SDL_Texture * fonttexture = SDL_CreateTextureFromSurface(renderer, surface);;
-    SDL_Rect * fontrect;
+    SDL_Rect fontrect;
     SDL_FreeSurface(surface);
-    fontrect->x = 100;
-    fontrect->y = 100;
-    fontrect->w = 200;
-    fontrect->h = 200;
+    fontrect.x = 100;
+    fontrect.y = 100;
+    fontrect.w = 200;
+    fontrect.h = 200;
 
-    SDL_RenderCopy(renderer, fonttexture, NULL, fontrect);
+    SDL_RenderCopy(renderer, fonttexture, NULL, &fontrect);
 
     IMG_Init(IMG_INIT_PNG) ;
 
