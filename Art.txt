@@ -1,3 +1,7 @@
 Midi-file:
 Surt R. - Sketches Vol. 1
 https://surt-r.itch.io/realms-of-arkania-inspired-sketches
+
+Font:
+Josefin Sans - Santiago Orozco
+https://www.1001freefonts.com/josefin-sans.font

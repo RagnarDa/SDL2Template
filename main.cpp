@@ -1,5 +1,8 @@
 #include <SDL.h>
 #include <SDL_mixer.h>
+#include <SDL_image.h>
+#include <SDL_ttf.h>
+#include <cstdio>
 
 
 int main(int argc, char *argv[])
@@ -13,6 +16,12 @@ int main(int argc, char *argv[])
                                        SDL_WINDOWPOS_CENTERED,
                                        SDL_WINDOWPOS_CENTERED,
                                        1000, 1000, 0);
+
+    SDL_Renderer *renderer = SDL_CreateRenderer(win, -1, 0);
+    if (renderer)
+    {
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    }
 
 
     int audio_rate;
@@ -55,7 +64,34 @@ int main(int argc, char *argv[])
     }
     Mix_FadeInMusic(music,0,2000);
 
+    /* Inint TTF. */
+    TTF_Init();
+    TTF_Font* font = TTF_OpenFont("../JosefinSans-Regular.ttf", 24);
+    if (font == NULL) {
+        fprintf(stderr, "error: font not found\n");
+        exit(EXIT_FAILURE);
+    }
 
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+    SDL_RenderClear(renderer);
+    char buff[100];
+    std::sprintf(buff, "Hello World!", 1);
+    SDL_Color textColor = { 255, 255, 255, 0 };
+    SDL_Surface* surface = TTF_RenderText_Solid(font, buff, textColor);
+    SDL_Texture * fonttexture = SDL_CreateTextureFromSurface(renderer, surface);;
+    SDL_Rect * fontrect;
+    SDL_FreeSurface(surface);
+    fontrect->x = 100;
+    fontrect->y = 100;
+    fontrect->w = 200;
+    fontrect->h = 200;
+
+    SDL_RenderCopy(renderer, fonttexture, NULL, fontrect);
+
+    IMG_Init(IMG_INIT_PNG) ;
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+    SDL_RenderClear(renderer);
 
     SDL_Event e;
     bool quit = false;

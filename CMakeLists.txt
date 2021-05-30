@@ -111,11 +111,14 @@ SET(lib_name sdl_ttf)
 SET(lib_source https://github.com/SDL-mirror/SDL_ttf.git)
 configure_file(CMakeLists.txt.in sdl_ttf-download/CMakeLists.txt)
 RUN_CMAKE(sdl_ttf-download)
+# Add freetype to our build
+add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/sdl_ttf-src/external/freetype-2.10.1   )
+
 project(SDL2_ttf C)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/sdl_ttf-src ${CMAKE_CURRENT_BINARY_DIR}/sdl_ttf-src/external/freetype-2.10.1/include)
 
 add_library(SDL2_ttf ${CMAKE_CURRENT_BINARY_DIR}/sdl_ttf-src/SDL_ttf.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_ttf-src/SDL_ttf.h)
-target_link_libraries(SDL2_ttf SDL2)
+target_link_libraries(SDL2_ttf SDL2 freetype)
 target_include_directories(SDL2_ttf PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/SDL2>)
 
 # Manually build image
@@ -126,22 +129,23 @@ RUN_CMAKE(sdl_image-download)
 project(SDL2_image C)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src)
 
-add_library(SDL2_image ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_png.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_bmp.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_gif.c
+add_library(SDL2_image SHARED ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_png.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_bmp.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_gif.c
         ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_jpg.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_lbm.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_pcx.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_pnm.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_svg.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_tga.c
         ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_tif.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_webp.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_WIC.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_xcf.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_xpm.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_xv.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_xxx.c)
 target_include_directories(SDL2_image PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src)
 target_compile_definitions(SDL2_image PRIVATE
         -DLOAD_BMP -DLOAD_GIF -DLOAD_LBM -DLOAD_PCX -DLOAD_PNM
-        -DLOAD_TGA -DLOAD_XCF -DLOAD_XPM -DLOAD_XV -DLOAD_XPM)
+        -DLOAD_TGA -DLOAD_XCF -DLOAD_XPM -DLOAD_XV -DLOAD_XPM
+        -DSDL_IMAGE_USE_COMMON_BACKEND)
 #target_compile_definitions(SDL2_image PRIVATE -DLOAD_JPG)
 #add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/external/jpeg-9d)
 #target_link_libraries(SDL2_image PRIVATE jpeg)
-set(HAVE_LD_VERSION_SCRIPT OFF CACHE BOOL "" FORCE)
+#set(HAVE_LD_VERSION_SCRIPT OFF CACHE BOOL "" FORCE)
 target_compile_definitions(SDL2_image PRIVATE -DLOAD_PNG)
 
 add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/external/libpng-1.6.37)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/external/libpng-1.6.37)
-target_link_libraries(SDL2_image PRIVATE png SDL2)
+target_link_libraries(SDL2_image png SDL2)
 
 project(SDL2Template)
 
