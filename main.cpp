@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
     SDL_Rect srcrect;
     const int goblinwidth = 704/11;
     const int goblinheight = 320/5;
-    const int goblinanimx = 0;
+    int goblinanimx = 0;
     const int goblinanimy = 0;
     srcrect.x = goblinwidth * goblinanimx;
     srcrect.y = goblinheight * goblinanimy;
@@ -128,7 +128,13 @@ int main(int argc, char *argv[])
                 quit = true;
             }
             if (e.type == SDL_MOUSEBUTTONDOWN){
-                quit = true;
+                goblinanimx += goblinwidth;
+                srcrect.x = goblinanimx;
+                SDL_RenderCopy(renderer, imagetexture, &srcrect, &imagerect);
+
+                /* Draw */
+                SDL_RenderPresent(renderer);
+                //quit = true;
             }
         }
     }
