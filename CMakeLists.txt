@@ -1,155 +1,74 @@
-cmake_minimum_required(VERSION 3.19)
-
-function(RUN_CMAKE pathtocmakelists)
-    execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-            RESULT_VARIABLE result
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${pathtocmakelists})
-    if (result)
-        message(FATAL_ERROR "CMake step for ${pathtocmakelists} failed: ${result}")
-    endif ()
-    execute_process(COMMAND ${CMAKE_COMMAND} --build .
-            RESULT_VARIABLE result
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${pathtocmakelists})
-    if(result)
-        message(FATAL_ERROR "Build step for ${pathtocmakelists} failed: ${result}")
-    endif()
-endfunction()
-# Download and unpack library at configure time
-function(SETUP_LIBRARY lib_name lib_source tag)
-    # Copy the downloading CMakeLists.txt into a folder
-    configure_file(CMakeLists.txt.in ${lib_name}-download/CMakeLists.txt)
-
-    # Run it
-    RUN_CMAKE(${lib_name}-download)
-
-    # Add libary directly to our build. This defines the targets
-    add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-src
-            ${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-build
-            EXCLUDE_FROM_ALL)
-
-    include_directories("${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-src/include")
-endfunction()
-
-function(SETUP_LIBRARY_SVN lib_name lib_source cmakelistspath)
-#Special for libmpg123
-configure_file(CMakeLists.svn.txt.in ${lib_name}-download/CMakeLists.txt)
-RUN_CMAKE(${lib_name}-download)
-
-RUN_CMAKE(${lib_name}-src/${cmakelistspath})
-
-    # Add libary directly to our build. This defines the targets
-#add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-src/${cmakelistspath}
-#        ${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-build
-#        EXCLUDE_FROM_ALL)
-
-link_directories(${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-src/${cmakelistspath}/src/libmpg123)
-link_directories(${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-src/${cmakelistspath}/src/libout123)
-link_directories(${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-src/${cmakelistspath}/src/libsyn123)
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-src/${cmakelistspath}/src/libmpg123)
-include_directories("${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-src/include")
-include_directories("${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-src/src/libmpg123")
-include_directories("${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-src/src/libout123")
-include_directories("${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-src/src/libsyn123")
-endfunction()
-SETUP_LIBRARY_SVN(libmpg123 svn://scm.orgis.org/mpg123/trunk ports/cmake)
+# Its assumed you are using vcpkg
+# so add -DCMAKE_TOOLCHAIN_FILE=[vcpkg root]\scripts\buildsystems\vcpkg.cmake
+# vcpkg doesnt install libmpg123 so: brew install mpg123
+# on windows run .\vcpkg install sdl2:x64-windows sdl2-image:x64-windows sdl2-ttf:x64-windows SDL2-mixer[mpg123]:x64-windows
 
 
-SETUP_LIBRARY(sdl https://github.com/SDL-mirror/SDL.git master)
-#SET(SDL2_DIR ${CMAKE_CURRENT_BINARY_DIR}/sdl-bin)
-SET(SDL2W_SDL2_DIR ${CMAKE_CURRENT_BINARY_DIR}/sdl-bin/CMakeFiles/Export/lib/cmake/SDL2)
-#list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_BINARY_DIR}/sdl-bin/CMakeFiles/Export/lib/cmake/SDL2")
-#list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_BINARY_DIR}/sdl-src")
-#list(APPEND CMAKE_MODULE_PATH /path/to/your/SDL2/modules)
-#find_package(SDL2 REQUIRED)
-#SETUP_LIBRARY(sdl_ttf https://github.com/libsdl-org/SDL_ttf.git release-2.0.15)
-#SETUP_LIBRARY(sdl_image https://github.com/libsdl-org/SDL_image.git FALSE)
-#SETUP_LIBRARY(libmpg123 https://github.com/gypified/libmpg123.git TRUE)
-#SETUP_LIBRARY(flac https://github.com/xiph/flac.git FALSE)
-#SET(ANDROID ON)
-#set(SUPPORT_OGG OFF CACHE BOOL "" FORCE)
-# Essentially make our own CMakeLists.txt for the mixer
-# Might probably break when it is updated.
-SET(lib_name sdl_mixer)
-SET(lib_source https://github.com/SDL-mirror/SDL_mixer.git)
-configure_file(CMakeLists.txt.in sdl_mixer-download/CMakeLists.txt)
-RUN_CMAKE(sdl_mixer-download)
-#SETUP_LIBRARY(sdl_mixer https://github.com/SDL-mirror/SDL_mixer.git FALSE)
-project(SDL_mixer C)
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/include ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs)
+cmake_minimum_required(VERSION 3.7)
+project(SDLTemplate)
 
-add_library(SDL2_mixer SHARED)
+set(CMAKE_CXX_STANDARD 17)
+#set(CMAKE_EXE_LINKER_FLAGS "-static")
 
+set(SOURCES main.cpp)
+add_executable(SDLTemplate ${SOURCES})
+add_library(${CMAKE_PROJECT_NAME}_lib STATIC ${SOURCES})
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
-target_sources(SDL2_mixer PRIVATE
-        ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/effect_position.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/effects_internal.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/effect_stereoreverse.c
-        ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/mixer.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/music.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/utils.c
-        ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/load_aiff.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/load_voc.c
-        ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/music_cmd.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/music_flac.c
-        ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/music_fluidsynth.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/music_mad.c
-        ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/music_mikmod.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/music_modplug.c
-        ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/music_mpg123.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/music_nativemidi.c
-        ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/mp3utils.c
-        ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/music_ogg.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/music_opus.c
-        ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/music_timidity.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_mixer-src/src/codecs/music_wav.c)
+# Enable testing for the project
+#enable_testing()
+#add_subdirectory(tst)
+#:wadd_subdirectory(lib/googletest)
+if (false)#(MSVC) #WIN32 #using vcpkg instead!
+    MESSAGE("WINDOWS VISUAL STUDIO")
+	set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}")
 
-add_definitions(-DMUSIC_MP3_MPG123)
-#add_subdirectory(external/mpg123-1.25.13)
-target_link_libraries(SDL2_mixer PRIVATE libmpg123.a libsyn123.a libout123.a)
-target_include_directories(SDL2_mixer PUBLIC .)
-target_link_libraries(SDL2_mixer PRIVATE SDL2)
+	include_directories(win32/include ${CMAKE_SOURCE_DIR}/include)
+	target_link_libraries(SDLTemplate 
+		${CMAKE_SOURCE_DIR}/win32/lib/SDL2.lib  ${CMAKE_SOURCE_DIR}/win32/lib/SDL2_image.lib
+		${CMAKE_SOURCE_DIR}/win32/lib/SDL2_ttf.lib)
+	#	${CMAKE_SOURCE_DIR}/lib/GoogleMock.lib ${CMAKE_SOURCE_DIR}/lib/GoogleTest.lib)
+	add_custom_command(TARGET SDLTemplate POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${PROJECT_SOURCE_DIR}/win32/bin"
+        $<TARGET_FILE_DIR:SDLTemplate>)
+	add_custom_command(TARGET SDLTemplate POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${PROJECT_SOURCE_DIR}/res"
+        $<TARGET_FILE_DIR:SDLTemplate>/res)
+	
+	# warning level 4 and all warnings as errors
+	add_compile_options(/W4 /WX)
+else()
+    include_directories(include)
+    find_package(SDL2 CONFIG REQUIRED)
 
+    #for finding FindSDL2_image.cmake https://trenki2.github.io/blog/2017/07/04/using-sdl2-image-with-cmake/
+    #set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}")
 
-# Add libary directly to our build. This defines the targets
-add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-src
-        ${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-build
-        EXCLUDE_FROM_ALL)
+    find_package(SDL2-image REQUIRED)
+	find_package(sdl2-ttf REQUIRED)
+	find_package(sdl2-mixer REQUIRED)
+	#find_package(mpg123 CONFIG REQUIRED)
+    #include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS} ${SDL2TTF_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/include)
+	set(libraries SDL2::SDL2main SDL2::SDL2-static SDL2::SDL2_image SDL2::SDL2_ttf SDL2::SDL2_mixer )
+    target_link_libraries(SDLTemplate ${libraries})# ${CMAKE_SOURCE_DIR}/lib/libgmock.a ${CMAKE_SOURCE_DIR}/lib/libgtest.a)
+	target_link_libraries(${CMAKE_PROJECT_NAME}_lib ${libraries})
+	
+	# lots of warnings and all warnings as errors
+    add_compile_options(-Wall -Wextra -pedantic -Werror)
 
-include_directories("${CMAKE_CURRENT_BINARY_DIR}/${lib_name}-src/include")
+	# In launch.vs.json set  "currentDir": "${workspaceRoot}" in configurations to make VS launch with root dir as cwd
+	if (MSVC AND FALSE)
+		add_custom_command(TARGET SDLTemplate POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${PROJECT_SOURCE_DIR}/win32/bin/mixer"
+        $<TARGET_FILE_DIR:SDLTemplate>)	
+		# VC has another 
+	#	add_custom_command(TARGET SDLTemplate POST_BUILD
+	#	COMMAND ${CMAKE_COMMAND} -E copy_directory
+     #   "${PROJECT_SOURCE_DIR}/res"
+    #    $<TARGET_FILE_DIR:SDLTemplate>/res)
+	endif()
+ENDIF()
 
-# Manually build ttf
-SET(lib_name sdl_ttf)
-SET(lib_source https://github.com/SDL-mirror/SDL_ttf.git)
-configure_file(CMakeLists.txt.in sdl_ttf-download/CMakeLists.txt)
-RUN_CMAKE(sdl_ttf-download)
-# Add freetype to our build
-add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/sdl_ttf-src/external/freetype-2.10.1   )
-
-project(SDL2_ttf C)
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/sdl_ttf-src ${CMAKE_CURRENT_BINARY_DIR}/sdl_ttf-src/external/freetype-2.10.1/include)
-
-add_library(SDL2_ttf ${CMAKE_CURRENT_BINARY_DIR}/sdl_ttf-src/SDL_ttf.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_ttf-src/SDL_ttf.h)
-target_link_libraries(SDL2_ttf SDL2 freetype)
-target_include_directories(SDL2_ttf PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/SDL2>)
-
-# Manually build image
-SET(lib_name sdl_image)
-SET(lib_source https://github.com/SDL-mirror/SDL_image.git)
-configure_file(CMakeLists.txt.in sdl_image-download/CMakeLists.txt)
-RUN_CMAKE(sdl_image-download)
-project(SDL2_image C)
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src)
-
-add_library(SDL2_image SHARED ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_png.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_bmp.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_gif.c
-        ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_jpg.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_lbm.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_pcx.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_pnm.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_svg.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_tga.c
-        ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_tif.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_webp.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_WIC.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_xcf.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_xpm.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_xv.c ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/IMG_xxx.c)
-target_include_directories(SDL2_image PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src)
-target_compile_definitions(SDL2_image PRIVATE
-        -DLOAD_BMP -DLOAD_GIF -DLOAD_LBM -DLOAD_PCX -DLOAD_PNM
-        -DLOAD_TGA -DLOAD_XCF -DLOAD_XPM -DLOAD_XV -DLOAD_XPM
-        -DSDL_IMAGE_USE_COMMON_BACKEND)
-#target_compile_definitions(SDL2_image PRIVATE -DLOAD_JPG)
-#add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/external/jpeg-9d)
-#target_link_libraries(SDL2_image PRIVATE jpeg)
-#set(HAVE_LD_VERSION_SCRIPT OFF CACHE BOOL "" FORCE)
-target_compile_definitions(SDL2_image PRIVATE -DLOAD_PNG)
-
-add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/external/libpng-1.6.37)
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/sdl_image-src/external/libpng-1.6.37)
-target_link_libraries(SDL2_image png SDL2)
-
-project(SDL2Template)
-
-set(CMAKE_CXX_STANDARD 14)
-
-add_executable(SDL2Template main.cpp)
-target_link_libraries(SDL2Template SDL2 libmpg123.a SDL2_mixer SDL2_ttf SDL2_image)
