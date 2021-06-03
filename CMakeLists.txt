@@ -1,7 +1,9 @@
 # Its assumed you are using vcpkg
 # so add -DCMAKE_TOOLCHAIN_FILE=[vcpkg root]\scripts\buildsystems\vcpkg.cmake
-# vcpkg doesnt install libmpg123 so: brew install mpg123
-# on windows run .\vcpkg install sdl2:x64-windows sdl2-image:x64-windows sdl2-ttf:x64-windows SDL2-mixer[mpg123]:x64-windows
+# on windows run .\vcpkg install sdl2:x64-windows sdl2-image:x64-windows sdl2-ttf:x64-windows SDL2-mixer[mpg123]:x64-windows SDL2-gfx:x64-windows
+# on macos run:
+# bash
+# ./vcpkg install sdl2:x64-osx sdl2-image:x64-osx sdl2-ttf:x64-osx sdl2-mixer[mpg123]:x64-osx sdl2-gfx:x64-osx
 
 
 cmake_minimum_required(VERSION 3.7)
@@ -49,9 +51,10 @@ else()
     find_package(SDL2-image REQUIRED)
 	find_package(sdl2-ttf REQUIRED)
 	find_package(sdl2-mixer REQUIRED)
+	find_package(sdl2-gfx REQUIRED)
 	#find_package(mpg123 CONFIG REQUIRED)
     #include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS} ${SDL2TTF_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/include)
-	set(libraries SDL2::SDL2main SDL2::SDL2-static SDL2::SDL2_image SDL2::SDL2_ttf SDL2::SDL2_mixer )
+	set(libraries SDL2::SDL2main SDL2::SDL2-static SDL2::SDL2_image SDL2::SDL2_ttf SDL2::SDL2_mixer SDL2::SDL2_gfx)
     target_link_libraries(SDLTemplate ${libraries})# ${CMAKE_SOURCE_DIR}/lib/libgmock.a ${CMAKE_SOURCE_DIR}/lib/libgtest.a)
 	target_link_libraries(${CMAKE_PROJECT_NAME}_lib ${libraries})
 	

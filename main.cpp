@@ -2,6 +2,7 @@
 #include <SDL_mixer.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <SDL2_gfxPrimitives.h>
 #include <cstdio>
 #include <cstdlib>
 
@@ -114,6 +115,14 @@ int main(int argc, char *argv[])
     srcrect.w = goblinwidth;
     srcrect.h = goblinheight;
     SDL_RenderCopy(renderer, imagetexture, &srcrect, &imagerect);
+
+    /* GFX demo */
+    Sint16 vx[] = { 100, 300, 200 };
+    Sint16 vy[] = { 100, 100, 300 };
+    aapolygonColor(renderer, vx, vy, 3, 0xFFFF0000);
+    Sint16 vx2[] = { 100, 600, 200 };
+    Sint16 vy2[] = { 100, 600, 300 };
+    polygonColor(renderer, vx2, vy2, 3, 0xFFFF0000);
 
     /* Draw */
     SDL_RenderPresent(renderer);
