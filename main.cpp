@@ -5,7 +5,9 @@
 #include <SDL2_gfxPrimitives.h>
 #include <cstdio>
 #include <cstdlib>
+#include "Game.h"
 
+Game *game = nullptr;
 
 int main(int argc, char *argv[])
 {
@@ -130,23 +132,32 @@ int main(int argc, char *argv[])
     SDL_Event e;
     bool quit = false;
     while (!quit){
-        while (SDL_PollEvent(&e)){
-            if (e.type == SDL_QUIT){
-                quit = true;
-            }
-            if (e.type == SDL_KEYDOWN){
-                quit = true;
-            }
-            if (e.type == SDL_MOUSEBUTTONDOWN){
-                goblinanimx += goblinwidth;
-                srcrect.x = goblinanimx;
-                SDL_RenderCopy(renderer, imagetexture, &srcrect, &imagerect);
+        const int FPS = 30; // seconds
+        const int FrameDelay = 1000/FPS; // milliseconds
 
-                /* Draw */
-                SDL_RenderPresent(renderer);
-                //quit = true;
+        Uint32 Framestart;
+        int Frametime;
+
+
+        game = new Game();
+        game->init("GameWindow", 640, 480, false);
+
+        while (game->running())
+        {
+            Framestart = SDL_GetTicks();
+            game->handleEvents();
+            game->update(1.0/FPS);
+            game->render();
+
+            Frametime = (int)SDL_GetTicks()-(int)Framestart;
+            if (FrameDelay > Frametime)
+            {
+                SDL_Delay(FrameDelay-Frametime);
             }
         }
+
+        game->clean();
+        return 0;
     }
 
     if(Mix_PlayingMusic()) {
