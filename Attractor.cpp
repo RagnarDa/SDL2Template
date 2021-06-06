@@ -6,23 +6,22 @@
 #include <vector>
 #include <cmath>
 
-Attractor::Attractor(double mass):mass(mass) {
+Attractor::Attractor(Object * obj, double mass):pobject(obj), mass(mass) {
 }
 
 void Attractor::update(double deltatime) {
     for (auto a : *pattractors)
     {
-        if (a != this)
+        if (a->pobject != this->pobject)
         {
-            double dx = a->posX - this->posX;
-            double dy = a->posY - this->posY;
-            double dz = a->posZ - this->posZ;
+            double dx = a->pobject->posX - this->pobject->posX;
+            double dy = a->pobject->posY - this->pobject->posY;
+            double dz = a->pobject->posZ - this->pobject->posZ;
             double dist = std::sqrt(dx*dx+dy*dy+dz*dz);
             double magi = a->mass/(dist*dist*dist);
-            this->movementX += magi*dx*deltatime;
-            this->movementY += magi*dy*deltatime;
-            this->movementZ += magi*dz*deltatime;
+            this->pobject->movementX += magi*dx*deltatime;
+            this->pobject->movementY += magi*dy*deltatime;
+            this->pobject->movementZ += magi*dz*deltatime;
         }
     }
-    Object::update(deltatime);
 }

@@ -5,7 +5,7 @@
 #include "Object.h"
 #include "Camera.h"
 #include "screenobject.h"
-#include "Attractor.h"
+#include "Planet.h"
 #include <cmath>
 #ifndef M_PI
 #define M_PI 3.14159265359
@@ -13,15 +13,16 @@
 #include <cassert>
 
 std::vector<Attractor*> attractors;
+std::vector<Collidable*> collidables;
 
-Attractor planet2(1.0/MAXFLOAT);
-Attractor planet(1.0/MAXFLOAT);
-Attractor blackhole(1);
+Planet planet2(1.0/1000000);
+Planet planet(1.0/1000000);
+Planet blackhole(1);
 Camera camera;
-ScreenObject vviring;
-ScreenObject vvifin;
-ScreenObject vvilwing;
-ScreenObject vvirwing;
+//ScreenObject vviring;
+//ScreenObject vvifin;
+//ScreenObject vvilwing;
+//ScreenObject vvirwing;
 
 SDL_Texture* fonttexture1, * fonttexture2, * fonttexture3, * fonttexture4, * fonttexture5, * fonttexture6, * fonttexture7, * fonttexture8;
 SDL_Rect fontrect1, fontrect2, fontrect3, fontrect4, fontrect5, fontrect6, fontrect7, fontrect8;
@@ -110,6 +111,12 @@ Game::Game():window(nullptr),renderer(nullptr)
     blackhole.pattractors = &attractors;
     planet.pattractors = &attractors;
     planet2.pattractors = &attractors;
+    collidables.push_back(&blackhole);
+    collidables.push_back(&planet);
+    collidables.push_back(&planet2);
+    blackhole.pcollidables = &collidables;
+    planet.pcollidables = &collidables;
+    planet2.pcollidables = &collidables;
 }
 
 Game::~Game()
@@ -209,7 +216,7 @@ void Game::ResetGame()
     double orbitdist = 5.0;
     double orbitalV = std::sqrt((Gconstant * blackhole.mass)/orbitdist);
     //orbitalV = orbitalV*std::sqrt(orbitdist);
-    double orbitdist2 = 1.0;
+    double orbitdist2 = 2.0;
     double orbitalV2 = std::sqrt((Gconstant * blackhole.mass)/orbitdist2);
     blackhole.srcrect.x = 144;
     blackhole.srcrect.y = 428;
@@ -236,7 +243,7 @@ void Game::ResetGame()
     planet.posX = 0.0;
     planet.posY = 0.0;
     planet.posZ = orbitdist;
-    planet.movementY = orbitalV;//1.0/std::sqrt(2.0);
+    planet.movementY = 0.0;//orbitalV;//1.0/std::sqrt(2.0);
 
 
     planet2.srcrect.x = 144;
@@ -500,8 +507,9 @@ void Game::DrawDistanceLines()
 void Game::clean()
 {
 	// Needs to destroy these so texture is destroyed before renderer... :|
-	blackhole.~Attractor();
-	planet.~Attractor();
+	blackhole.~Planet();
+	planet.~Planet();
+	planet2.~Planet();
 	
 	if (renderer) {
 		SDL_DestroyRenderer(renderer);

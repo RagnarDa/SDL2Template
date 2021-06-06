@@ -65,6 +65,9 @@ void Object::update(double dt) {
 	yaw += yawSpeed * dt;
 	pitch += pitchSpeed * dt;
 	roll += rollSpeed * dt;
+    rotation += movementrotation * dt;
+    if (rotation > M_PI*2.0)
+        rotation -= M_PI*2.0;
 //	const double deltaZ = SCREENWIDTH * dt;
 //	destrect.w -= deltaZ;
 //	destrect.h -= deltaZ;
@@ -125,7 +128,7 @@ void Object::render(SDL_Renderer *renderer, Camera camera) {
 	                     texture,
 	                     &srcrect,
 	                     &destrect,
-							0, // Degrees
+                     (rotation/M_PI)*180.0, // Degrees
 	                     NULL, // NULL=destrect/2
 	                     SDL_RendererFlip::SDL_FLIP_NONE // Mirroring
 	                     );
@@ -137,5 +140,8 @@ Object::~Object() {
 		SDL_DestroyTexture(texture);
 	}
 	texture = nullptr;
+}
+
+Object::Object() :texture(nullptr),srcrect(),destrect(),orientation(0.0,0.0,0.0){
 }
 

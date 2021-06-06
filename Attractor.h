@@ -9,12 +9,13 @@
 #include "Object.h"
 #include <vector>
 
-class Attractor: public Object {
+class Attractor{
 public:
-    Attractor(double mass);
+    Attractor(Object * obj, double mass);
     void update(double deltatime);
     std::vector<Attractor*> * pattractors;
     double mass;
+    Object * pobject;
 };
 
 

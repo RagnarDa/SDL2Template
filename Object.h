@@ -14,9 +14,10 @@
 class Camera;
 class Object {
 public:
-	Object():texture(nullptr),srcrect(),destrect(),orientation(0.0,0.0,0.0){};
+	Object();
 	void init(const char *filepath, SDL_Renderer *renderer);
-	void update(double dt);
+
+    void update(double dt);
 	void render(SDL_Renderer *renderer, Camera camera);
 	~Object();
 
@@ -26,6 +27,8 @@ public:
 	double posX=0.0,posY=0.0,posZ=0.0;
 	double sizeX=3.0,sizeY=3.0,sizeZ=1.0;
 	double movementX=0.0,movementY=0.0,movementZ=0.0;
+	double rotation=0.0; // Clockwise radians
+	double movementrotation=M_PI; // Clockwise radians
 	//double xrotX=0.0,xrotY=0.0,xrotZ=0.0; // We only care about X axis of rotation right now
 	double yaw = 0.0, pitch = 0.0, roll = 0.0; // Radians TODO delete
 	rotmat orientation;
