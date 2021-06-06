@@ -14,7 +14,6 @@ public:
     Attractor(double mass);
     void update(double deltatime);
     std::vector<Attractor*> * pattractors;
-private:
     double mass;
 };
 

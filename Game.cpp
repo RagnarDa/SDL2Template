@@ -14,7 +14,8 @@
 
 std::vector<Attractor*> attractors;
 
-Attractor planet(1);
+Attractor planet2(1.0/MAXFLOAT);
+Attractor planet(1.0/MAXFLOAT);
 Attractor blackhole(1);
 Camera camera;
 ScreenObject vviring;
@@ -105,8 +106,10 @@ Game::Game():window(nullptr),renderer(nullptr)
     // Inte sa snygg design det har...
     attractors.push_back(&blackhole);
     attractors.push_back(&planet);
+    attractors.push_back(&planet2);
     blackhole.pattractors = &attractors;
     planet.pattractors = &attractors;
+    planet2.pattractors = &attractors;
 }
 
 Game::~Game()
@@ -195,36 +198,59 @@ void Game::ResetGame()
 	double planealtitude = 10 * level;
 	std::sprintf(buff, "ALT: %.0f", planealtitude);
 	get_text_and_rect(renderer, (SCREENWIDTH / 2) - (fontrect1.w/2), SCREENHEIGHT - fontrect1.h, buff, font, &fonttexture4, &fontrect4);
-    const int goblinwidth = 704/11;
-    const int goblinheight = 320/5;
+    const int meteorwidth = 48;
+    const int meteorheight = 48;
+    const double planetradius = 1;
     int goblinanimx = 0;
     const int goblinanimy = 0;
+    // Stable three body system https://math.stackexchange.com/questions/1613765/simple-stable-n-body-orbits-in-the-plane-with-some-fixed-bodies-allowed
     // Place black hole in middle of world
-    blackhole.srcrect.x = 0;
-    blackhole.srcrect.y = 0;
-    blackhole.srcrect.h = goblinheight;
-    blackhole.srcrect.w = goblinwidth;
-	blackhole.init("../goblin.png", renderer);
+    double Gconstant = 1.0;
+    double orbitdist = 1.0;
+    double orbitalV = (Gconstant * blackhole.mass)/orbitdist;
+    double orbitdist2 = 1.0;
+    double orbitalV2 = (Gconstant * blackhole.mass)/orbitdist2;
+    blackhole.srcrect.x = 144;
+    blackhole.srcrect.y = 428;
+    blackhole.srcrect.h = meteorheight;
+    blackhole.srcrect.w = meteorwidth;
+	blackhole.init("../simpleSpace_sheet.png", renderer);
     blackhole.movementZ = 0.0;
-    blackhole.sizeX = 5;
-    blackhole.sizeY = 5;
-    blackhole.sizeZ = 5;
+    blackhole.sizeX = planetradius;
+    blackhole.sizeY = planetradius;
+    blackhole.sizeZ = planetradius;
     blackhole.posX = 0;
     blackhole.posY = 0.0;
     blackhole.posZ = 0.0;
+    blackhole.movementY = 0.0;//-0.0/std::sqrt(2.0);
 
-    planet.srcrect.x = goblinwidth;
-    planet.srcrect.y = goblinheight;
-    planet.srcrect.h = goblinheight;
-    planet.srcrect.w = goblinwidth;
+    planet.srcrect.x = 108;
+    planet.srcrect.y = 32;
+    planet.srcrect.h = meteorheight;
+    planet.srcrect.w = meteorwidth;
     planet.init(blackhole.texture);
-    planet.sizeX = 5;
-    planet.sizeY = 5;
-    planet.sizeZ = 5;
+    planet.sizeX = planetradius;
+    planet.sizeY = planetradius;
+    planet.sizeZ = planetradius;
     planet.posX = 0.0;
-    planet.posY = 1.0;
-    planet.posZ = 1.0;
-    planet.movementZ = 1.0;
+    planet.posY = 0.0;
+    planet.posZ = orbitdist;
+    planet.movementY = orbitalV;//1.0/std::sqrt(2.0);
+
+
+    planet2.srcrect.x = 144;
+    planet2.srcrect.y = 380;
+    planet2.srcrect.h = meteorheight;
+    planet2.srcrect.w = meteorwidth;
+    planet2.init(blackhole.texture);
+    planet2.sizeX = planetradius;
+    planet2.sizeY = planetradius;
+    planet2.sizeZ = planetradius;
+    planet2.posX = 0.0;
+    planet2.posY = 0.0;
+    planet2.posZ = -orbitdist2;
+    planet2.movementY = -orbitalV2*1.0;//1.0/std::sqrt(2.0);
+
 
     // Camera position
 	camera.posX = -100.0; // Zoomed out
@@ -341,6 +367,7 @@ void Game::update(double deltatime)
 	        camera.update(deltatime);
 	        blackhole.update(deltatime);
 	        planet.update(deltatime);
+	        planet2.update(deltatime);
 	} else if(showtitlescreen)
 	{
 		titlescreentimer -= deltatime;
@@ -374,6 +401,15 @@ void Game::render()
 	{
 		blackhole.render(renderer, camera);
 		planet.render(renderer, camera);
+		planet2.render(renderer, camera);
+		char buff[1024];
+		double dx = blackhole.posX - planet.posX;
+        double dy = blackhole.posY - planet.posY;
+        double dz = blackhole.posZ - planet.posZ;
+
+		std::sprintf(buff,"%f",std::sqrt(dx*dx+dy*dy+dz*dz));
+        get_text_and_rect(renderer, 0, 0, buff, font, &fonttexture1, &fontrect1);
+        SDL_RenderCopy(renderer, fonttexture1, NULL, &fontrect1);
 		//	vviring.render(renderer, camera);
 	}
 
