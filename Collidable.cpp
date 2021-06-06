@@ -56,10 +56,12 @@ void Collidable::update(double deltatime) {
 
                 // Impart spin
                 // Hack!
-                double massratio = this->_mass / a->_mass;
-                double newrot = (this->pobject->movementrotation - a->pobject->movementrotation) * massratio;
-                a->pobject->movementrotation = (a->pobject->movementrotation - this->pobject->movementrotation) / massratio;
-                this->pobject->movementrotation = newrot;
+                // circumference = radius * pi * 2
+                double tanva = radia * a->pobject->movementrotation;
+                double tanvb = radib * this->pobject->movementrotation;
+                double prot = 2.0 * (tanva + tanvb) / (a->_mass + this->_mass);
+                this->pobject->movementrotation -= prot * a->_mass;
+                a->pobject->movementrotation -= prot * this->_mass;
             }
         }
     }
