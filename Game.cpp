@@ -206,10 +206,11 @@ void Game::ResetGame()
     // Stable three body system https://math.stackexchange.com/questions/1613765/simple-stable-n-body-orbits-in-the-plane-with-some-fixed-bodies-allowed
     // Place black hole in middle of world
     double Gconstant = 1.0;
-    double orbitdist = 1.0;
-    double orbitalV = (Gconstant * blackhole.mass)/orbitdist;
+    double orbitdist = 5.0;
+    double orbitalV = std::sqrt((Gconstant * blackhole.mass)/orbitdist);
+    //orbitalV = orbitalV*std::sqrt(orbitdist);
     double orbitdist2 = 1.0;
-    double orbitalV2 = (Gconstant * blackhole.mass)/orbitdist2;
+    double orbitalV2 = std::sqrt((Gconstant * blackhole.mass)/orbitdist2);
     blackhole.srcrect.x = 144;
     blackhole.srcrect.y = 428;
     blackhole.srcrect.h = meteorheight;
