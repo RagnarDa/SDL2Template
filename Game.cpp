@@ -15,6 +15,7 @@
 std::vector<Attractor*> attractors;
 std::vector<Collidable*> collidables;
 
+Planet spaceship(1.0/100000);
 Planet planet2(1.0/1000000);
 Planet planet(1.0/1000000);
 Planet blackhole(1);
@@ -108,15 +109,19 @@ Game::Game():window(nullptr),renderer(nullptr)
     attractors.push_back(&blackhole);
     attractors.push_back(&planet);
     attractors.push_back(&planet2);
+    attractors.push_back(&spaceship);
     blackhole.pattractors = &attractors;
     planet.pattractors = &attractors;
     planet2.pattractors = &attractors;
+    spaceship.pattractors = &attractors;
     collidables.push_back(&blackhole);
     collidables.push_back(&planet);
     collidables.push_back(&planet2);
+    collidables.push_back(&spaceship);
     blackhole.pcollidables = &collidables;
     planet.pcollidables = &collidables;
     planet2.pcollidables = &collidables;
+    spaceship.pcollidables = &collidables;
 }
 
 Game::~Game()
@@ -231,6 +236,7 @@ void Game::ResetGame()
     blackhole.posY = 0.0;
     blackhole.posZ = 0.0;
     blackhole.movementY = 0.0;//-0.0/std::sqrt(2.0);
+    blackhole.movementrotation = M_PI;
 
     planet.srcrect.x = 108;
     planet.srcrect.y = 32;
@@ -243,7 +249,8 @@ void Game::ResetGame()
     planet.posX = 0.0;
     planet.posY = 0.0;
     planet.posZ = orbitdist;
-    planet.movementY = 0.0;//orbitalV;//1.0/std::sqrt(2.0);
+    planet.movementY = orbitalV;//1.0/std::sqrt(2.0);
+    planet.movementrotation = M_PI * 2.0;
 
 
     planet2.srcrect.x = 144;
@@ -258,7 +265,21 @@ void Game::ResetGame()
     planet2.posY = 0.0;
     planet2.posZ = -orbitdist2;
     planet2.movementY = -orbitalV2*1.0;//1.0/std::sqrt(2.0);
+    planet2.movementrotation = M_PI * 1.5;
 
+    spaceship.srcrect.x = 96;
+    spaceship.srcrect.y = 380;
+    spaceship.srcrect.h = meteorheight;
+    spaceship.srcrect.w = meteorwidth;
+    spaceship.init(blackhole.texture);
+    spaceship.sizeX = planetradius;
+    spaceship.sizeY = planetradius;
+    spaceship.sizeZ = planetradius;
+    spaceship.posX = 0.0;
+    spaceship.posY = 0.0;
+    spaceship.posZ = -orbitdist2 * 2.0;
+    spaceship.movementY = -orbitalV2*1.0;//1.0/std::sqrt(2.0);
+    spaceship.movementrotation = 0.0;
 
     // Camera position
 	camera.posX = -100.0; // Zoomed out
@@ -376,6 +397,21 @@ void Game::update(double deltatime)
 	        blackhole.update(deltatime);
 	        planet.update(deltatime);
 	        planet2.update(deltatime);
+	        spaceship.update(deltatime);
+	        const double spaceshipeasyaccel = 1.0;
+        const Uint8* keystates = SDL_GetKeyboardState(NULL);
+        if (keystates[SDL_SCANCODE_A] || keystates[SDL_SCANCODE_LEFT]) {
+            spaceship.movementZ -= spaceshipeasyaccel * deltatime;
+        }
+        if (keystates[SDL_SCANCODE_D] || keystates[SDL_SCANCODE_RIGHT]) {
+            spaceship.movementZ += spaceshipeasyaccel * deltatime;
+        }
+        if (keystates[SDL_SCANCODE_W] || keystates[SDL_SCANCODE_UP]) {
+            spaceship.movementY += spaceshipeasyaccel * deltatime;
+        }
+        if (keystates[SDL_SCANCODE_S] || keystates[SDL_SCANCODE_DOWN]) {
+            spaceship.movementY -= spaceshipeasyaccel * deltatime;
+        }
 	} else if(showtitlescreen)
 	{
 		titlescreentimer -= deltatime;
@@ -410,6 +446,7 @@ void Game::render()
 		blackhole.render(renderer, camera);
 		planet.render(renderer, camera);
 		planet2.render(renderer, camera);
+		spaceship.render(renderer, camera);
 		char buff[1024];
 		double dx = blackhole.posX - planet.posX;
         double dy = blackhole.posY - planet.posY;
