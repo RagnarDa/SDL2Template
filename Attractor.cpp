@@ -19,9 +19,9 @@ void Attractor::update(double deltatime) {
             double dz = a->pobject->posZ - this->pobject->posZ;
             double dist = std::sqrt(dx*dx+dy*dy+dz*dz);
             double magi = a->mass/(dist*dist*dist);
-            this->pobject->movementX += magi*dx*deltatime;
-            this->pobject->movementY += magi*dy*deltatime;
-            this->pobject->movementZ += magi*dz*deltatime;
+            this->pobject->movementworldX += magi * dx * deltatime;
+            this->pobject->movementworldY += magi * dy * deltatime;
+            this->pobject->movementworldZ += magi * dz * deltatime;
         }
     }
 }

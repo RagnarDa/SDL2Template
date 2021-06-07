@@ -47,15 +47,15 @@ void Collidable::update(double deltatime) {
                 double nz = (this->pobject->posZ - a->pobject->posZ) / dist;
 
                 double p = 2.0 * (nx * dx + ny * dy + nz * dz) / (a->_mass + this->_mass);
-                this->pobject->movementX = this->pobject->movementX - p * a->_mass * nx;
-                this->pobject->movementY = this->pobject->movementY - p * a->_mass * ny;
-                this->pobject->movementZ = this->pobject->movementZ - p * a->_mass * nz;
-                a->pobject->movementX = a->pobject->movementX - p * this->_mass * nx;
-                a->pobject->movementY = a->pobject->movementY - p * this->_mass * ny;
-                a->pobject->movementZ = a->pobject->movementZ - p * this->_mass * nz;
+                this->pobject->movementworldX = this->pobject->movementworldX - p * a->_mass * nx;
+                this->pobject->movementworldY = this->pobject->movementworldY - p * a->_mass * ny;
+                this->pobject->movementworldZ = this->pobject->movementworldZ - p * a->_mass * nz;
+                a->pobject->movementworldX = a->pobject->movementworldX - p * this->_mass * nx;
+                a->pobject->movementworldY = a->pobject->movementworldY - p * this->_mass * ny;
+                a->pobject->movementworldZ = a->pobject->movementworldZ - p * this->_mass * nz;
 
                 // Impart spin
-                // Hack!
+                // Hacky but seems to work
                 // circumference = radius * pi * 2
                 double tanva = radia * a->pobject->movementrotation;
                 double tanvb = radib * this->pobject->movementrotation;

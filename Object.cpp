@@ -53,19 +53,25 @@ void Object::init(const char *filepath, SDL_Renderer *renderer) {
 }
 
 void Object::update(double dt) {
-	posX += movementX * dt * orientation.getX()[0];
-	posY += movementX*dt * orientation.getX()[1];
-	posZ += movementX*dt * orientation.getX()[2];
-	posX += movementY * dt * orientation.getY()[0];
-	posY += movementY * dt * orientation.getY()[1];
-	posZ += movementY * dt * orientation.getY()[2];
-	posX += movementZ * dt * orientation.getZ()[0];
-	posY += movementZ * dt * orientation.getZ()[1];
-	posZ += movementZ * dt * orientation.getZ()[2];
+	posX += movementselfX * dt * orientation.getX()[0];
+	posY += movementselfX * dt * orientation.getX()[1];
+	posZ += movementselfX * dt * orientation.getX()[2];
+	posX += movementselfY * dt * orientation.getY()[0];
+	posY += movementselfY * dt * orientation.getY()[1];
+	posZ += movementselfY * dt * orientation.getY()[2];
+	posX += movementselfZ * dt * orientation.getZ()[0];
+	posY += movementselfZ * dt * orientation.getZ()[1];
+	posZ += movementselfZ * dt * orientation.getZ()[2];
+	posX += movementworldX * dt;
+	posY += movementworldY * dt;
+	posZ += movementworldZ * dt;
 	yaw += yawSpeed * dt;
 	pitch += pitchSpeed * dt;
 	roll += rollSpeed * dt;
-    rotation += movementrotation * dt;
+//    rotation += movementrotation * dt;
+    orientation = orientation.turnAroundX(movementrotation * dt);
+    orientation.CalculateEulerAngles();
+    rotation = orientation.getRoll();
     if (rotation > M_PI*2.0)
         rotation -= M_PI*2.0;
 //	const double deltaZ = SCREENWIDTH * dt;

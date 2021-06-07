@@ -228,14 +228,14 @@ void Game::ResetGame()
     blackhole.srcrect.h = meteorheight;
     blackhole.srcrect.w = meteorwidth;
 	blackhole.init("../simpleSpace_sheet.png", renderer);
-    blackhole.movementZ = 0.0;
+    blackhole.movementworldZ = 0.0;
     blackhole.sizeX = planetradius;
     blackhole.sizeY = planetradius;
     blackhole.sizeZ = planetradius;
     blackhole.posX = 0;
     blackhole.posY = 0.0;
     blackhole.posZ = 0.0;
-    blackhole.movementY = 0.0;//-0.0/std::sqrt(2.0);
+    blackhole.movementworldY = 0.0;//-0.0/std::sqrt(2.0);
     blackhole.movementrotation = M_PI;
 
     planet.srcrect.x = 108;
@@ -249,7 +249,7 @@ void Game::ResetGame()
     planet.posX = 0.0;
     planet.posY = 0.0;
     planet.posZ = orbitdist;
-    planet.movementY = orbitalV;//1.0/std::sqrt(2.0);
+    planet.movementworldY = orbitalV;//1.0/std::sqrt(2.0);
     planet.movementrotation = M_PI * 2.0;
 
 
@@ -264,7 +264,7 @@ void Game::ResetGame()
     planet2.posX = 0.0;
     planet2.posY = 0.0;
     planet2.posZ = -orbitdist2;
-    planet2.movementY = -orbitalV2*1.0;//1.0/std::sqrt(2.0);
+    planet2.movementworldY = -orbitalV2 * 1.0;//1.0/std::sqrt(2.0);
     planet2.movementrotation = M_PI * 1.5;
 
     spaceship.srcrect.x = 96;
@@ -278,7 +278,7 @@ void Game::ResetGame()
     spaceship.posX = 0.0;
     spaceship.posY = 0.0;
     spaceship.posZ = -orbitdist2 * 2.0;
-    spaceship.movementY = -orbitalV2*1.0;//1.0/std::sqrt(2.0);
+    spaceship.movementworldY = -orbitalV2 * 1.0;//1.0/std::sqrt(2.0);
     spaceship.movementrotation = 0.0;
 
     // Camera position
@@ -286,9 +286,9 @@ void Game::ResetGame()
 	camera.posY = 0.0;
 	camera.posZ = 0.0;
 
-	camera.movementX = 0.0;
-	camera.movementY = -0.0;
-	camera.movementZ = 0.0;
+	camera.movementworldX = 0.0;
+	camera.movementworldY = -0.0;
+	camera.movementworldZ = 0.0;
 
 	isRunning = true;
 	gamerunning = true;
@@ -323,17 +323,17 @@ void Game::handleEvents()
 					break;
 				case SDL_SCANCODE_A:
 //					robot_destRect.x--;
-					//planet.movementX--;
+					//planet.movementworldX--;
 //					planet.TurnRollStabilized(-robotturnspeed,0.0);
 					break;
 				case SDL_SCANCODE_W:
 //					robot_destRect.y--;
-					//planet.movementY++;
+					//planet.movementworldY++;
 //					planet.TurnRollStabilized(0.0*M_PI,robotturnspeed);
 					break;
 				case SDL_SCANCODE_S:
 //					robot_destRect.y++;
-					//planet.movementY--;
+					//planet.movementworldY--;
 //					planet.TurnRollStabilized(0.0 * M_PI, -robotturnspeed);
 					break;
 			/*	case SDL_SCANCODE_KP_8:
@@ -401,16 +401,16 @@ void Game::update(double deltatime)
 	        const double spaceshipeasyaccel = 1.0;
         const Uint8* keystates = SDL_GetKeyboardState(NULL);
         if (keystates[SDL_SCANCODE_A] || keystates[SDL_SCANCODE_LEFT]) {
-            spaceship.movementZ -= spaceshipeasyaccel * deltatime;
+            spaceship.movementworldZ -= spaceshipeasyaccel * deltatime;
         }
         if (keystates[SDL_SCANCODE_D] || keystates[SDL_SCANCODE_RIGHT]) {
-            spaceship.movementZ += spaceshipeasyaccel * deltatime;
+            spaceship.movementworldZ += spaceshipeasyaccel * deltatime;
         }
         if (keystates[SDL_SCANCODE_W] || keystates[SDL_SCANCODE_UP]) {
-            spaceship.movementY += spaceshipeasyaccel * deltatime;
+            spaceship.movementworldY += spaceshipeasyaccel * deltatime;
         }
         if (keystates[SDL_SCANCODE_S] || keystates[SDL_SCANCODE_DOWN]) {
-            spaceship.movementY -= spaceshipeasyaccel * deltatime;
+            spaceship.movementworldY -= spaceshipeasyaccel * deltatime;
         }
 	} else if(showtitlescreen)
 	{

@@ -26,7 +26,8 @@ public:
 	SDL_Rect srcrect, destrect;
 	double posX=0.0,posY=0.0,posZ=0.0;
 	double sizeX=3.0,sizeY=3.0,sizeZ=1.0;
-	double movementX=0.0,movementY=0.0,movementZ=0.0;
+	double movementselfX=0.0,movementselfY=0.0,movementselfZ=0.0;
+	double movementworldX=0.0,movementworldY=0.0,movementworldZ=0.0;
 	double rotation=0.0; // Clockwise radians
 	double movementrotation=M_PI; // Clockwise radians
 	//double xrotX=0.0,xrotY=0.0,xrotZ=0.0; // We only care about X axis of rotation right now
