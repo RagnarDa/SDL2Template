@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
     SDL_Event e;
     bool quit = false;
     while (!quit){
-        const int FPS = 60; // seconds
+        const int FPS = 240; // seconds
         const int FrameDelay = 1000/FPS; // milliseconds
 
         Uint32 Framestart;

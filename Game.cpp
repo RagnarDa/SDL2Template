@@ -6,6 +6,7 @@
 #include "Camera.h"
 #include "screenobject.h"
 #include "Planet.h"
+#include "Spaceship.h"
 #include <cmath>
 #ifndef M_PI
 #define M_PI 3.14159265359
@@ -14,10 +15,10 @@
 
 std::vector<Attractor*> attractors;
 std::vector<Collidable*> collidables;
-
-Planet spaceship(1.0/100000);
-Planet planet2(1.0/1000000);
-Planet planet(1.0/1000000);
+const double planetmass = 1.0/1000000000000000000.0;
+Spaceship spaceship(planetmass/1);
+Planet planet2(planetmass);
+Planet planet(planetmass);
 Planet blackhole(1);
 Camera camera;
 //ScreenObject vviring;
@@ -236,7 +237,7 @@ void Game::ResetGame()
     blackhole.posY = 0.0;
     blackhole.posZ = 0.0;
     blackhole.movementworldY = 0.0;//-0.0/std::sqrt(2.0);
-    blackhole.movementrotation = M_PI;
+    blackhole.movementrotation = 0.0;
 
     planet.srcrect.x = 108;
     planet.srcrect.y = 32;

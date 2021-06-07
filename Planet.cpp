@@ -7,7 +7,7 @@
 Planet::Planet(double mass) : Attractor(this, mass), Collidable(this, mass) {}
 
 void Planet::update(double deltatime) {
+    Collidable::update(deltatime);
     Attractor::update(deltatime);
     Object::update(deltatime);
-    Collidable::update(deltatime);
 }
