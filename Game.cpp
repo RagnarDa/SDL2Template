@@ -21,6 +21,7 @@ Planet planet2(planetmass);
 Planet planet(planetmass);
 Planet blackhole(1);
 Camera camera;
+double cameracceleration  = 0.0;
 //ScreenObject vviring;
 //ScreenObject vvifin;
 //ScreenObject vvilwing;
@@ -394,24 +395,31 @@ void Game::update(double deltatime)
     showtitlescreen = false;
 	if (gamerunning) {
 
+	        camera.movementworldX += cameracceleration * deltatime;
 	        camera.update(deltatime);
 	        blackhole.update(deltatime);
 	        planet.update(deltatime);
 	        planet2.update(deltatime);
 	        spaceship.update(deltatime);
 	        const double spaceshipeasyaccel = 1.0;
+	        const double spaceshipturnspeed = M_PI_2;
         const Uint8* keystates = SDL_GetKeyboardState(NULL);
         if (keystates[SDL_SCANCODE_A] || keystates[SDL_SCANCODE_LEFT]) {
-            spaceship.movementworldZ -= spaceshipeasyaccel * deltatime;
+            spaceship.movementrotation -= spaceshipturnspeed * deltatime;
+//            spaceship.movementselfZ -= spaceshipeasyaccel * deltatime;
         }
         if (keystates[SDL_SCANCODE_D] || keystates[SDL_SCANCODE_RIGHT]) {
-            spaceship.movementworldZ += spaceshipeasyaccel * deltatime;
+            spaceship.movementrotation += spaceshipturnspeed * deltatime;
+//            spaceship.movementselfZ += spaceshipeasyaccel * deltatime;
         }
         if (keystates[SDL_SCANCODE_W] || keystates[SDL_SCANCODE_UP]) {
-            spaceship.movementworldY += spaceshipeasyaccel * deltatime;
+            spaceship.movementworldX += spaceship.orientation.getY()[0] * spaceshipeasyaccel * deltatime;
+            spaceship.movementworldY += spaceship.orientation.getY()[1] * spaceshipeasyaccel * deltatime;
+            spaceship.movementworldZ += spaceship.orientation.getY()[2] * spaceshipeasyaccel * deltatime;
+//            spaceship.movementselfY += spaceshipeasyaccel * deltatime;
         }
         if (keystates[SDL_SCANCODE_S] || keystates[SDL_SCANCODE_DOWN]) {
-            spaceship.movementworldY -= spaceshipeasyaccel * deltatime;
+            spaceship.movementselfY -= spaceshipeasyaccel * deltatime;
         }
 	} else if(showtitlescreen)
 	{
@@ -447,7 +455,27 @@ void Game::render()
 		blackhole.render(renderer, camera);
 		planet.render(renderer, camera);
 		planet2.render(renderer, camera);
-		spaceship.render(renderer, camera);
+		auto spaceshiponscreen = spaceship.render(renderer, camera);
+		switch (spaceshiponscreen)
+        {
+
+            case Object::onscreen:
+                if (camera.posX < -100)
+                {
+                    cameracceleration = 100.0;
+                } else {
+                    cameracceleration = 0.0;
+                    camera.movementworldX = 0.0;
+                }
+                break;
+            case Object::outofscreen:
+                // Spaseship outside view, zoom out
+                cameracceleration = -100.0;
+                break;
+            case Object::closetoedge:
+                cameracceleration = -camera.movementworldX * 0.5;
+                break;
+        }
 		char buff[1024];
 		double dx = blackhole.posX - planet.posX;
         double dy = blackhole.posY - planet.posY;

@@ -53,18 +53,19 @@ void Object::init(const char *filepath, SDL_Renderer *renderer) {
 }
 
 void Object::update(double dt) {
-	posX += movementselfX * dt * orientation.getX()[0];
-	posY += movementselfX * dt * orientation.getX()[1];
-	posZ += movementselfX * dt * orientation.getX()[2];
-	posX += movementselfY * dt * orientation.getY()[0];
-	posY += movementselfY * dt * orientation.getY()[1];
-	posZ += movementselfY * dt * orientation.getY()[2];
-	posX += movementselfZ * dt * orientation.getZ()[0];
-	posY += movementselfZ * dt * orientation.getZ()[1];
-	posZ += movementselfZ * dt * orientation.getZ()[2];
-	posX += movementworldX * dt;
-	posY += movementworldY * dt;
-	posZ += movementworldZ * dt;
+    double frictionmod = 0.999999; // Let's pretend there is some friction in vacuum
+	posX += movementselfX * dt * orientation.getX()[0] * frictionmod;
+	posY += movementselfX * dt * orientation.getX()[1] * frictionmod;
+	posZ += movementselfX * dt * orientation.getX()[2] * frictionmod;
+	posX += movementselfY * dt * orientation.getY()[0] * frictionmod;
+	posY += movementselfY * dt * orientation.getY()[1] * frictionmod;
+	posZ += movementselfY * dt * orientation.getY()[2] * frictionmod;
+	posX += movementselfZ * dt * orientation.getZ()[0] * frictionmod;
+	posY += movementselfZ * dt * orientation.getZ()[1] * frictionmod;
+	posZ += movementselfZ * dt * orientation.getZ()[2] * frictionmod;
+	posX += movementworldX * dt * frictionmod;
+	posY += movementworldY * dt * frictionmod;
+	posZ += movementworldZ * dt * frictionmod;
 	yaw += yawSpeed * dt;
 	pitch += pitchSpeed * dt;
 	roll += rollSpeed * dt;
@@ -81,7 +82,8 @@ void Object::update(double dt) {
 //	destrect.y += (deltaZ/1.0);
 }
 
-void Object::render(SDL_Renderer *renderer, Camera camera) {
+// Returns false if sprite is outside screen
+Object::objectonscreen Object::render(SDL_Renderer *renderer, Camera camera) {
 	// Assume camera is pointed straight ahead right now
 	//    o
 	// o-----x
@@ -124,12 +126,18 @@ void Object::render(SDL_Renderer *renderer, Camera camera) {
 	const double screenCenterY = 0.5 + (SCREENHEIGHT / 2.0) - (screenRelativeHeightPixels / 2.0);
 	destrect.x = screenCenterX + screenXpixels;
 	destrect.y = screenCenterY - screenYpixels;
+	objectonscreen visible = objectonscreen::onscreen;
+	double closeedge = SCREENWIDTH/10.0;
+	double nearedge = SCREENWIDTH/8.0;
+	if (destrect.x < closeedge || destrect.y < closeedge
+        || destrect.x > SCREENWIDTH - closeedge || destrect.y > SCREENHEIGHT - closeedge)
+	    visible = objectonscreen::outofscreen;
+	else if (destrect.x < nearedge || destrect.y < nearedge
+	    || destrect.x > SCREENWIDTH - nearedge || destrect.y > SCREENHEIGHT - nearedge)
+	    visible = objectonscreen::closetoedge;
 //	SDL_RenderCopy(renderer, texture, &srcrect, &destrect);
-	SDL_Point center;
 	// What is the center point relative to? Original textue, source rectange or dest rect???
 	// I should just set it to destrect.h/2 and destrect.w/2 = NULL
-	center.x = -5;
-	center.y = 0;
 	SDL_RenderCopyEx(renderer,
 	                     texture,
 	                     &srcrect,
@@ -138,6 +146,7 @@ void Object::render(SDL_Renderer *renderer, Camera camera) {
 	                     NULL, // NULL=destrect/2
 	                     SDL_RendererFlip::SDL_FLIP_NONE // Mirroring
 	                     );
+	return visible;
 }
 
 Object::~Object() {

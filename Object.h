@@ -18,7 +18,13 @@ public:
 	void init(const char *filepath, SDL_Renderer *renderer);
 
     void update(double dt);
-	void render(SDL_Renderer *renderer, Camera camera);
+    enum objectonscreen
+    {
+        onscreen,
+        outofscreen,
+        closetoedge
+    };
+	objectonscreen render(SDL_Renderer *renderer, Camera camera);
 	~Object();
 
 	SDL_Texture* texture;
