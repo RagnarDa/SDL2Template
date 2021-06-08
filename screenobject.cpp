@@ -2,7 +2,7 @@
 #include "Object.h"
 #include "Camera.h"
 
-bool ScreenObject::render(SDL_Renderer* renderer, Camera camera)
+void ScreenObject::render(SDL_Renderer* renderer, Camera camera)
 {
 	destrect.w = screenRelativeWidthPixels;
 	destrect.h = screenRelativeHeightPixels;

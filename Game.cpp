@@ -7,6 +7,7 @@
 #include "screenobject.h"
 #include "Planet.h"
 #include "Spaceship.h"
+#include "Blackhole.h"
 #include <cmath>
 #ifndef M_PI
 #define M_PI 3.14159265359
@@ -15,11 +16,12 @@
 
 std::vector<Attractor*> attractors;
 std::vector<Collidable*> collidables;
+std::vector<Object*> objects;
 const double planetmass = 1.0/1000000000000000000.0;
 Spaceship spaceship(planetmass/1);
 Planet planet2(planetmass);
 Planet planet(planetmass);
-Planet blackhole(1);
+Blackhole blackhole(1);
 Camera camera;
 double cameracceleration  = 0.0;
 //ScreenObject vviring;
@@ -116,11 +118,15 @@ Game::Game():window(nullptr),renderer(nullptr)
     planet.pattractors = &attractors;
     planet2.pattractors = &attractors;
     spaceship.pattractors = &attractors;
-    collidables.push_back(&blackhole);
     collidables.push_back(&planet);
     collidables.push_back(&planet2);
     collidables.push_back(&spaceship);
-    blackhole.pcollidables = &collidables;
+
+    objects.push_back(&planet);
+    objects.push_back(&planet2);
+    objects.push_back(&spaceship);
+
+    blackhole.pobjects = &objects;
     planet.pcollidables = &collidables;
     planet2.pcollidables = &collidables;
     spaceship.pcollidables = &collidables;
@@ -231,9 +237,9 @@ void Game::ResetGame()
     blackhole.srcrect.w = meteorwidth;
 	blackhole.init("../simpleSpace_sheet.png", renderer);
     blackhole.movementworldZ = 0.0;
-    blackhole.sizeX = planetradius;
-    blackhole.sizeY = planetradius;
-    blackhole.sizeZ = planetradius;
+    blackhole.sizeX = planetradius/10;
+    blackhole.sizeY = planetradius/10;
+    blackhole.sizeZ = planetradius/10;
     blackhole.posX = 0;
     blackhole.posY = 0.0;
     blackhole.posZ = 0.0;
@@ -251,7 +257,7 @@ void Game::ResetGame()
     planet.posX = 0.0;
     planet.posY = 0.0;
     planet.posZ = orbitdist;
-    planet.movementworldY = orbitalV;//1.0/std::sqrt(2.0);
+    planet.movementworldY = 0.0;//orbitalV;//1.0/std::sqrt(2.0);
     planet.movementrotation = M_PI * 2.0;
 
 
@@ -279,8 +285,8 @@ void Game::ResetGame()
     spaceship.sizeZ = planetradius;
     spaceship.posX = 0.0;
     spaceship.posY = 0.0;
-    spaceship.posZ = -orbitdist2 * 2.0;
-    spaceship.movementworldY = -orbitalV2 * 1.0;//1.0/std::sqrt(2.0);
+    spaceship.posZ = orbitdist2 * 1.0;
+    spaceship.movementworldY = orbitalV2 * 1.0;//1.0/std::sqrt(2.0);
     spaceship.movementrotation = 0.0;
 
     // Camera position
@@ -573,9 +579,10 @@ void Game::DrawDistanceLines()
 void Game::clean()
 {
 	// Needs to destroy these so texture is destroyed before renderer... :|
-	blackhole.~Planet();
+	blackhole.~Blackhole();
 	planet.~Planet();
 	planet2.~Planet();
+	spaceship.~Spaceship();
 	
 	if (renderer) {
 		SDL_DestroyRenderer(renderer);
