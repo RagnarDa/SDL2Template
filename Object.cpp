@@ -84,6 +84,8 @@ void Object::update(double dt) {
 
 // Returns false if sprite is outside screen
 Object::objectonscreen Object::render(SDL_Renderer *renderer, Camera camera) {
+    if (!draw)
+        return Object::objectonscreen::outofscreen;
 	// Assume camera is pointed straight ahead right now
 	//    o
 	// o-----x

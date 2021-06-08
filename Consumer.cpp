@@ -5,6 +5,7 @@
 #include "Consumer.h"
 
 #include <cmath>
+int score = 0;
 
 Consumer::Consumer(Object * obj, double mass):pobject(obj), _mass(mass) {
 }
@@ -18,15 +19,30 @@ void Consumer::update(double deltatime) {
             double dy = a->posY - this->pobject->posY;
             double dz = a->posZ - this->pobject->posZ;
             double dist = std::sqrt(dy*dy+dz*dz);
-            const double blackholesize = 1.0;
-            if (dist < blackholesize)
+            const double eventhorizon = 1.0;
+            if (dist < eventhorizon)
             {
-                a->movementworldX += (dist/blackholesize)/deltatime;
-                a->movementworldY *= (dist/blackholesize)*deltatime;
-                a->movementworldZ *= (dist/blackholesize)*deltatime;
-//                a->movementworldY *= (blackholesize-dist)-deltatime;
-//                a->movementworldZ *= (blackholesize-dist)-deltatime;
+                a->movementworldX += (dist / eventhorizon) / deltatime;
+                a->movementworldY *= (dist / eventhorizon) * deltatime;
+                a->movementworldZ *= (dist / eventhorizon) * deltatime;
+//                a->movementworldY *= (eventhorizon-dist)-deltatime;
+//                a->movementworldZ *= (eventhorizon-dist)-deltatime;
+                if (a->posX > 100) {
+                    for (int o = 0; o<pobjects->size(); o++)
+                    {
+                        if (pobjects->at(o) == a) {
+                            // erase the nth element
+                            pobjects->erase(pobjects->begin() + o);
+                            a->draw = false;
+                            score++;
+                        }
+                    }
+                }
             }
         }
     }
+}
+
+int Consumer::getscore() {
+    return score;
 }

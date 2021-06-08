@@ -16,6 +16,7 @@ public:
     double _mass;
     std::vector<Object*> * pobjects;
     Object * pobject;
+    static int getscore();
 };
 
 

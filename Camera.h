@@ -6,8 +6,8 @@
 #define RB05SIM_CAMERA_H
 #include "Object.h"
 
-#define SCREENWIDTH 640.0
-#define SCREENHEIGHT 480.0
+#define SCREENWIDTH 1024.0
+#define SCREENHEIGHT 640.0
 #define SCREENFOV ((15.0/180.0)*M_PI)
 
 //class Object;

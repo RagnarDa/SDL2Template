@@ -231,20 +231,21 @@ void Game::ResetGame()
     //orbitalV = orbitalV*std::sqrt(orbitdist);
     double orbitdist2 = 2.0;
     double orbitalV2 = std::sqrt((Gconstant * blackhole.mass)/orbitdist2);
-    blackhole.srcrect.x = 144;
-    blackhole.srcrect.y = 428;
-    blackhole.srcrect.h = meteorheight;
-    blackhole.srcrect.w = meteorwidth;
+    blackhole.srcrect.x = 184;
+    blackhole.srcrect.y = 313;
+    blackhole.srcrect.h = 67;
+    blackhole.srcrect.w = 67;
 	blackhole.init("../simpleSpace_sheet.png", renderer);
     blackhole.movementworldZ = 0.0;
-    blackhole.sizeX = planetradius/10;
-    blackhole.sizeY = planetradius/10;
-    blackhole.sizeZ = planetradius/10;
+    const int blackholeradius = planetradius * 2;
+    blackhole.sizeX = blackholeradius;
+    blackhole.sizeY = blackholeradius;
+    blackhole.sizeZ = blackholeradius;
     blackhole.posX = 0;
     blackhole.posY = 0.0;
     blackhole.posZ = 0.0;
     blackhole.movementworldY = 0.0;//-0.0/std::sqrt(2.0);
-    blackhole.movementrotation = 0.0;
+    blackhole.movementrotation = 0.1 * M_PI;
 
     planet.srcrect.x = 108;
     planet.srcrect.y = 32;
@@ -487,7 +488,7 @@ void Game::render()
         double dy = blackhole.posY - planet.posY;
         double dz = blackhole.posZ - planet.posZ;
 
-		std::sprintf(buff,"%f",std::sqrt(dx*dx+dy*dy+dz*dz));
+		std::sprintf(buff,"%i",Consumer::getscore());
         get_text_and_rect(renderer, 0, 0, buff, font, &fonttexture1, &fontrect1);
         SDL_RenderCopy(renderer, fonttexture1, NULL, &fontrect1);
 		//	vviring.render(renderer, camera);

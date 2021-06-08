@@ -44,6 +44,7 @@ public:
 	void TurnRollStabilized(double clockwise, double climb); 
 
 	void init(SDL_Texture *tex);
+	bool draw = true;
 };
 
 
