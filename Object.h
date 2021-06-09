@@ -45,6 +45,8 @@ public:
 
 	void init(SDL_Texture *tex);
 	bool draw = true;
+	bool isplayer = false;
+	void reset();
 };
 
 

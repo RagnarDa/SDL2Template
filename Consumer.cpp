@@ -27,7 +27,7 @@ void Consumer::update(double deltatime) {
                 a->movementworldZ *= (dist / eventhorizon) * deltatime;
 //                a->movementworldY *= (eventhorizon-dist)-deltatime;
 //                a->movementworldZ *= (eventhorizon-dist)-deltatime;
-                if (a->posX > 100) {
+                if (a->posX > 500) {
                     for (int o = 0; o<pobjects->size(); o++)
                     {
                         if (pobjects->at(o) == a) {

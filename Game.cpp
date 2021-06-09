@@ -8,11 +8,13 @@
 #include "Planet.h"
 #include "Spaceship.h"
 #include "Blackhole.h"
+#include "Backgroundstar.h"
 #include <cmath>
 #ifndef M_PI
 #define M_PI 3.14159265359
 #endif
 #include <cassert>
+#include <array>
 
 std::vector<Attractor*> attractors;
 std::vector<Collidable*> collidables;
@@ -22,6 +24,8 @@ Spaceship spaceship(planetmass/1);
 Planet planet2(planetmass);
 Planet planet(planetmass);
 Blackhole blackhole(1);
+const int nrofbackgroundstars = 100;
+std::array<Backgroundstar,nrofbackgroundstars> backgroundstars;
 Camera camera;
 double cameracceleration  = 0.0;
 //ScreenObject vviring;
@@ -130,6 +134,8 @@ Game::Game():window(nullptr),renderer(nullptr)
     planet.pcollidables = &collidables;
     planet2.pcollidables = &collidables;
     spaceship.pcollidables = &collidables;
+
+
 }
 
 Game::~Game()
@@ -223,6 +229,32 @@ void Game::ResetGame()
     const double planetradius = 1;
     int goblinanimx = 0;
     const int goblinanimy = 0;
+
+
+    // Inte sa snygg design det har...
+    attractors.clear();
+    objects.clear();
+    collidables.clear();
+    attractors.push_back(&blackhole);
+    attractors.push_back(&planet);
+    attractors.push_back(&planet2);
+    attractors.push_back(&spaceship);
+    blackhole.pattractors = &attractors;
+    planet.pattractors = &attractors;
+    planet2.pattractors = &attractors;
+    spaceship.pattractors = &attractors;
+    collidables.push_back(&planet);
+    collidables.push_back(&planet2);
+    collidables.push_back(&spaceship);
+
+    objects.push_back(&planet);
+    objects.push_back(&planet2);
+    objects.push_back(&spaceship);
+
+    blackhole.pobjects = &objects;
+    planet.pcollidables = &collidables;
+    planet2.pcollidables = &collidables;
+    spaceship.pcollidables = &collidables;
     // Stable three body system https://math.stackexchange.com/questions/1613765/simple-stable-n-body-orbits-in-the-plane-with-some-fixed-bodies-allowed
     // Place black hole in middle of world
     double Gconstant = 1.0;
@@ -231,13 +263,14 @@ void Game::ResetGame()
     //orbitalV = orbitalV*std::sqrt(orbitdist);
     double orbitdist2 = 2.0;
     double orbitalV2 = std::sqrt((Gconstant * blackhole.mass)/orbitdist2);
+    blackhole.reset();
     blackhole.srcrect.x = 184;
     blackhole.srcrect.y = 313;
-    blackhole.srcrect.h = 67;
-    blackhole.srcrect.w = 67;
+    blackhole.srcrect.h = 71;
+    blackhole.srcrect.w = 71;
 	blackhole.init("../simpleSpace_sheet.png", renderer);
     blackhole.movementworldZ = 0.0;
-    const int blackholeradius = planetradius * 2;
+    const int blackholeradius = planetradius * 2.0;
     blackhole.sizeX = blackholeradius;
     blackhole.sizeY = blackholeradius;
     blackhole.sizeZ = blackholeradius;
@@ -247,6 +280,7 @@ void Game::ResetGame()
     blackhole.movementworldY = 0.0;//-0.0/std::sqrt(2.0);
     blackhole.movementrotation = 0.1 * M_PI;
 
+    planet.reset();
     planet.srcrect.x = 108;
     planet.srcrect.y = 32;
     planet.srcrect.h = meteorheight;
@@ -262,6 +296,7 @@ void Game::ResetGame()
     planet.movementrotation = M_PI * 2.0;
 
 
+    planet2.reset();
     planet2.srcrect.x = 144;
     planet2.srcrect.y = 380;
     planet2.srcrect.h = meteorheight;
@@ -276,6 +311,7 @@ void Game::ResetGame()
     planet2.movementworldY = -orbitalV2 * 1.0;//1.0/std::sqrt(2.0);
     planet2.movementrotation = M_PI * 1.5;
 
+    spaceship.reset();
     spaceship.srcrect.x = 96;
     spaceship.srcrect.y = 380;
     spaceship.srcrect.h = meteorheight;
@@ -290,7 +326,47 @@ void Game::ResetGame()
     spaceship.movementworldY = orbitalV2 * 1.0;//1.0/std::sqrt(2.0);
     spaceship.movementrotation = 0.0;
 
+
+    const int backgroundsize = 300;
+
+    for (size_t i = 0; i < nrofbackgroundstars; i++)
+    {
+        backgroundstars.at(i).init(blackhole.texture);
+        int startype = rand() % 4;
+        switch (startype)
+        {
+            case 0:
+                backgroundstars.at(i).srcrect.x = 52;
+                backgroundstars.at(i).srcrect.y = 196;
+                backgroundstars.at(i).srcrect.h = 48;
+                backgroundstars.at(i).srcrect.w = 48;
+                break;
+            case 1:
+                backgroundstars.at(i).srcrect.x = 52;
+                backgroundstars.at(i).srcrect.y = 148;
+                backgroundstars.at(i).srcrect.h = 48;
+                backgroundstars.at(i).srcrect.w = 48;
+                break;
+            case 2:
+                backgroundstars.at(i).srcrect.x = 96;
+                backgroundstars.at(i).srcrect.y = 484;
+                backgroundstars.at(i).srcrect.h = 16;
+                backgroundstars.at(i).srcrect.w = 16;
+                break;
+            default:
+                backgroundstars.at(i).srcrect.x = 112;
+                backgroundstars.at(i).srcrect.y = 484;
+                backgroundstars.at(i).srcrect.h = 16;
+                backgroundstars.at(i).srcrect.w = 16;
+                break;
+        }
+        backgroundstars.at(i).posY = (rand() % backgroundsize) - (backgroundsize / 2);
+        backgroundstars.at(i).posZ = (rand() % backgroundsize) - (backgroundsize / 2);
+        backgroundstars.at(i).posX = 700 - (rand() % 400);
+    }
+
     // Camera position
+    camera.reset();
 	camera.posX = -100.0; // Zoomed out
 	camera.posY = 0.0;
 	camera.posZ = 0.0;
@@ -428,6 +504,12 @@ void Game::update(double deltatime)
         if (keystates[SDL_SCANCODE_S] || keystates[SDL_SCANCODE_DOWN]) {
             spaceship.movementselfY -= spaceshipeasyaccel * deltatime;
         }
+        if (!spaceship.draw)
+        {
+            // Means player has been consumed by black hole
+            // Reset game
+            this->ResetGame();
+        }
 	} else if(showtitlescreen)
 	{
 		titlescreentimer -= deltatime;
@@ -459,6 +541,10 @@ void Game::render()
 	DrawDistanceLines();
 	if (blackhole.texture) // Texture needs to be loaded first
 	{
+        for (auto & a:backgroundstars)
+        {
+            a.render(renderer, camera);
+        }
 		blackhole.render(renderer, camera);
 		planet.render(renderer, camera);
 		planet2.render(renderer, camera);
@@ -488,8 +574,8 @@ void Game::render()
         double dy = blackhole.posY - planet.posY;
         double dz = blackhole.posZ - planet.posZ;
 
-		std::sprintf(buff,"%i",Consumer::getscore());
-        get_text_and_rect(renderer, 0, 0, buff, font, &fonttexture1, &fontrect1);
+		std::sprintf(buff,"Score: %i",Consumer::getscore());
+        get_text_and_rect(renderer, 10, 10, buff, font, &fonttexture1, &fontrect1);
         SDL_RenderCopy(renderer, fonttexture1, NULL, &fontrect1);
 		//	vviring.render(renderer, camera);
 	}
