@@ -19,10 +19,11 @@
 std::vector<Attractor*> attractors;
 std::vector<Collidable*> collidables;
 std::vector<Object*> objects;
-const double planetmass = 1.0/1000000000000000000.0;
 Spaceship spaceship(planetmass/1);
-Planet planet2(planetmass);
-Planet planet(planetmass);
+Object engineplume;
+std::vector<Planet*> planets;
+//Planet planet2(planetmass);
+//Planet planet(planetmass);
 Blackhole blackhole(1);
 const int nrofbackgroundstars = 100;
 std::array<Backgroundstar,nrofbackgroundstars> backgroundstars;
@@ -113,28 +114,7 @@ void get_text_and_rect(SDL_Renderer* renderer, int x, int y, char* text,
 //SDL_Rect robot_srcRect, robot_destRect;
 Game::Game():window(nullptr),renderer(nullptr)
 {
-    // Inte sa snygg design det har...
-    attractors.push_back(&blackhole);
-    attractors.push_back(&planet);
-    attractors.push_back(&planet2);
-    attractors.push_back(&spaceship);
-    blackhole.pattractors = &attractors;
-    planet.pattractors = &attractors;
-    planet2.pattractors = &attractors;
-    spaceship.pattractors = &attractors;
-    collidables.push_back(&planet);
-    collidables.push_back(&planet2);
-    collidables.push_back(&spaceship);
-
-    objects.push_back(&planet);
-    objects.push_back(&planet2);
-    objects.push_back(&spaceship);
-
-    blackhole.pobjects = &objects;
-    planet.pcollidables = &collidables;
-    planet2.pcollidables = &collidables;
-    spaceship.pcollidables = &collidables;
-
+//    ResetGame();
 
 }
 
@@ -215,15 +195,15 @@ void Game::ResetGame()
 {
 	showtitlescreen = false;
 	showstatustext = false;
-	char buff[100];
-	std::sprintf(buff, "Level %i", level);
-	get_text_and_rect(renderer, 0, 0, buff, font, &fonttexture1, &fontrect1);
-	std::sprintf(buff, "Lives %i", lives);
-	get_text_and_rect(renderer, 0, fontrect1.h, buff, font, &fonttexture2, &fontrect2);
-	robottimer = 0.0;
-	double planealtitude = 10 * level;
-	std::sprintf(buff, "ALT: %.0f", planealtitude);
-	get_text_and_rect(renderer, (SCREENWIDTH / 2) - (fontrect1.w/2), SCREENHEIGHT - fontrect1.h, buff, font, &fonttexture4, &fontrect4);
+//	char buff[100];
+//	std::sprintf(buff, "Level %i", level);
+//	get_text_and_rect(renderer, 0, 0, buff, font, &fonttexture1, &fontrect1);
+//	std::sprintf(buff, "Lives %i", lives);
+//	get_text_and_rect(renderer, 0, fontrect1.h, buff, font, &fonttexture2, &fontrect2);
+//	robottimer = 0.0;
+//	double planealtitude = 10 * level;
+//	std::sprintf(buff, "ALT: %.0f", planealtitude);
+//	get_text_and_rect(renderer, (SCREENWIDTH / 2) - (fontrect1.w/2), SCREENHEIGHT - fontrect1.h, buff, font, &fonttexture4, &fontrect4);
     const int meteorwidth = 48;
     const int meteorheight = 48;
     const double planetradius = 1;
@@ -233,28 +213,34 @@ void Game::ResetGame()
 
     // Inte sa snygg design det har...
     attractors.clear();
-    objects.clear();
     collidables.clear();
+    objects.clear();
+    for (auto p: planets)
+    {
+        delete p;
+    }
+    planets.clear();
+    planets.push_back(new Planet());
+    planets.push_back(new Planet());
+    for (auto p: planets)
+    {
+        attractors.push_back(p);
+        p->pattractors = &attractors;
+        collidables.push_back(p);
+        p->pcollidables = &collidables;
+        objects.push_back(p);
+        p->reset();
+    }
     attractors.push_back(&blackhole);
-    attractors.push_back(&planet);
-    attractors.push_back(&planet2);
     attractors.push_back(&spaceship);
     blackhole.pattractors = &attractors;
-    planet.pattractors = &attractors;
-    planet2.pattractors = &attractors;
     spaceship.pattractors = &attractors;
-    collidables.push_back(&planet);
-    collidables.push_back(&planet2);
     collidables.push_back(&spaceship);
-
-    objects.push_back(&planet);
-    objects.push_back(&planet2);
     objects.push_back(&spaceship);
-
     blackhole.pobjects = &objects;
-    planet.pcollidables = &collidables;
-    planet2.pcollidables = &collidables;
     spaceship.pcollidables = &collidables;
+
+    
     // Stable three body system https://math.stackexchange.com/questions/1613765/simple-stable-n-body-orbits-in-the-plane-with-some-fixed-bodies-allowed
     // Place black hole in middle of world
     double Gconstant = 1.0;
@@ -264,10 +250,10 @@ void Game::ResetGame()
     double orbitdist2 = 2.0;
     double orbitalV2 = std::sqrt((Gconstant * blackhole.mass)/orbitdist2);
     blackhole.reset();
-    blackhole.srcrect.x = 184;
-    blackhole.srcrect.y = 313;
-    blackhole.srcrect.h = 71;
-    blackhole.srcrect.w = 71;
+    blackhole.srcrect.x = 180;
+    blackhole.srcrect.y = 303;
+    blackhole.srcrect.h = 75;
+    blackhole.srcrect.w = 75;
 	blackhole.init("../simpleSpace_sheet.png", renderer);
     blackhole.movementworldZ = 0.0;
     const int blackholeradius = planetradius * 2.0;
@@ -280,36 +266,37 @@ void Game::ResetGame()
     blackhole.movementworldY = 0.0;//-0.0/std::sqrt(2.0);
     blackhole.movementrotation = 0.1 * M_PI;
 
-    planet.reset();
-    planet.srcrect.x = 108;
-    planet.srcrect.y = 32;
-    planet.srcrect.h = meteorheight;
-    planet.srcrect.w = meteorwidth;
-    planet.init(blackhole.texture);
-    planet.sizeX = planetradius;
-    planet.sizeY = planetradius;
-    planet.sizeZ = planetradius;
-    planet.posX = 0.0;
-    planet.posY = 0.0;
-    planet.posZ = orbitdist;
-    planet.movementworldY = 0.0;//orbitalV;//1.0/std::sqrt(2.0);
-    planet.movementrotation = M_PI * 2.0;
+
+    planets.at(0)->srcrect.x = 108;
+    planets.at(0)->srcrect.y = 32;
+    planets.at(0)->srcrect.h = meteorheight;
+    planets.at(0)->srcrect.w = meteorwidth;
+    planets.at(0)->init(blackhole.texture);
+    planets.at(0)->sizeX = planetradius;
+    planets.at(0)->sizeY = planetradius;
+    planets.at(0)->sizeZ = planetradius;
+    planets.at(0)->posX = 0.0;
+    planets.at(0)->posY = 0.0;
+    planets.at(0)->posZ = orbitdist;
+    planets.at(0)->movementworldY = 0.0;//orbitalV;//1.0/std::sqrt(2.0);
+    planets.at(0)->movementrotation = M_PI * 1.0;
+    planets.at(0)->draw = true;
 
 
-    planet2.reset();
-    planet2.srcrect.x = 144;
-    planet2.srcrect.y = 380;
-    planet2.srcrect.h = meteorheight;
-    planet2.srcrect.w = meteorwidth;
-    planet2.init(blackhole.texture);
-    planet2.sizeX = planetradius;
-    planet2.sizeY = planetradius;
-    planet2.sizeZ = planetradius;
-    planet2.posX = 0.0;
-    planet2.posY = 0.0;
-    planet2.posZ = -orbitdist2;
-    planet2.movementworldY = -orbitalV2 * 1.0;//1.0/std::sqrt(2.0);
-    planet2.movementrotation = M_PI * 1.5;
+    planets.at(1)->srcrect.x = 144;
+    planets.at(1)->srcrect.y = 380;
+    planets.at(1)->srcrect.h = meteorheight;
+    planets.at(1)->srcrect.w = meteorwidth;
+    planets.at(1)->init(blackhole.texture);
+    planets.at(1)->sizeX = planetradius;
+    planets.at(1)->sizeY = planetradius;
+    planets.at(1)->sizeZ = planetradius;
+    planets.at(1)->posX = 0.0;
+    planets.at(1)->posY = 0.0;
+    planets.at(1)->posZ = -orbitdist2;
+    planets.at(1)->movementworldY = -orbitalV2 * 1.0;//1.0/std::sqrt(2.0);
+    planets.at(1)->movementrotation = M_PI * 0.5;
+    planets.at(1)->draw = true;
 
     spaceship.reset();
     spaceship.srcrect.x = 96;
@@ -365,6 +352,24 @@ void Game::ResetGame()
         backgroundstars.at(i).posX = 700 - (rand() % 400);
     }
 
+    // Rocket engine exhaust
+    engineplume.reset();
+    engineplume.srcrect.x = 156;
+    engineplume.srcrect.y = 32;
+    engineplume.srcrect.h = 64;
+    engineplume.srcrect.w = 32;
+    engineplume.init(blackhole.texture);
+    engineplume.sizeX = planetradius/2;
+    engineplume.sizeY = planetradius*2/2;
+    engineplume.sizeZ = planetradius/2;
+    engineplume.posX = 0.0;
+    engineplume.posY = 0.0;
+    engineplume.posZ = 0.0;
+    engineplume.movementworldY = 0.0;//1.0/std::sqrt(2.0);
+    engineplume.movementrotation = 0.0;
+    engineplume.draw = true;
+    
+    
     // Camera position
     camera.reset();
 	camera.posX = -100.0; // Zoomed out
@@ -481,9 +486,21 @@ void Game::update(double deltatime)
 	        camera.movementworldX += cameracceleration * deltatime;
 	        camera.update(deltatime);
 	        blackhole.update(deltatime);
-	        planet.update(deltatime);
-	        planet2.update(deltatime);
+	        for (auto & p:planets)
+            {
+	            p->update(deltatime);
+            }
 	        spaceship.update(deltatime);
+	        engineplume.posY = spaceship.posY;
+	        engineplume.posX = spaceship.posX;
+	        engineplume.posZ = spaceship.posZ;
+	        engineplume.rotation = spaceship.rotation;
+	        engineplume.orientation = spaceship.orientation;
+	        engineplume.posY -= spaceship.orientation.getY()[1] * engineplume.sizeY/1.2;
+	        engineplume.posZ -= spaceship.orientation.getY()[2] * engineplume.sizeY/1.2;
+	        engineplume.draw = false;
+//        engineplume.posY += spaceship.orientation.getY() * engineplume.sizeY/2;
+        //engineplume.update(deltatime);
 	        const double spaceshipeasyaccel = 1.0;
 	        const double spaceshipturnspeed = M_PI_2;
         const Uint8* keystates = SDL_GetKeyboardState(NULL);
@@ -499,10 +516,11 @@ void Game::update(double deltatime)
             spaceship.movementworldX += spaceship.orientation.getY()[0] * spaceshipeasyaccel * deltatime;
             spaceship.movementworldY += spaceship.orientation.getY()[1] * spaceshipeasyaccel * deltatime;
             spaceship.movementworldZ += spaceship.orientation.getY()[2] * spaceshipeasyaccel * deltatime;
+            engineplume.draw = true;
 //            spaceship.movementselfY += spaceshipeasyaccel * deltatime;
         }
         if (keystates[SDL_SCANCODE_S] || keystates[SDL_SCANCODE_DOWN]) {
-            spaceship.movementselfY -= spaceshipeasyaccel * deltatime;
+            // lets dont have reversing spaceship.movementselfY -= spaceshipeasyaccel * deltatime;
         }
         if (!spaceship.draw)
         {
@@ -546,10 +564,15 @@ void Game::render()
             a.render(renderer, camera);
         }
 		blackhole.render(renderer, camera);
-		planet.render(renderer, camera);
-		planet2.render(renderer, camera);
-		auto spaceshiponscreen = spaceship.render(renderer, camera);
-		switch (spaceshiponscreen)
+        engineplume.render(renderer, camera);
+        auto isonscreen = Object::onscreen;
+        for (auto & p:objects)
+        {
+            auto os = p->render(renderer, camera);
+            if (os != Object::onscreen)
+                isonscreen = os;
+        }
+		switch (isonscreen)
         {
 
             case Object::onscreen:
@@ -570,9 +593,6 @@ void Game::render()
                 break;
         }
 		char buff[1024];
-		double dx = blackhole.posX - planet.posX;
-        double dy = blackhole.posY - planet.posY;
-        double dz = blackhole.posZ - planet.posZ;
 
 		std::sprintf(buff,"Score: %i",Consumer::getscore());
         get_text_and_rect(renderer, 10, 10, buff, font, &fonttexture1, &fontrect1);
@@ -667,8 +687,10 @@ void Game::clean()
 {
 	// Needs to destroy these so texture is destroyed before renderer... :|
 	blackhole.~Blackhole();
-	planet.~Planet();
-	planet2.~Planet();
+	for (auto p:planets)
+    {
+	    p->~Planet();
+    }
 	spaceship.~Spaceship();
 	
 	if (renderer) {
