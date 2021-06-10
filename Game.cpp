@@ -209,6 +209,12 @@ void Game::ResetGame()
     const double planetradius = 1;
     int goblinanimx = 0;
     const int goblinanimy = 0;
+    const int blackholeradius = planetradius * 2.0;
+    double Gconstant = 1.0;
+    double orbitdist = 5.0;
+    double orbitdist2 = 2.0;
+    double orbitalV = std::sqrt((Gconstant * blackhole.mass) / orbitdist);
+    double orbitalV2 = std::sqrt((Gconstant * blackhole.mass) / orbitdist2);
 
 
     // Inte sa snygg design det har...
@@ -219,18 +225,7 @@ void Game::ResetGame()
     {
         delete p;
     }
-    planets.clear();
-    planets.push_back(new Planet());
-    planets.push_back(new Planet());
-    for (auto p: planets)
-    {
-        attractors.push_back(p);
-        p->pattractors = &attractors;
-        collidables.push_back(p);
-        p->pcollidables = &collidables;
-        objects.push_back(p);
-        p->reset();
-    }
+
     attractors.push_back(&blackhole);
     attractors.push_back(&spaceship);
     blackhole.pattractors = &attractors;
@@ -241,78 +236,172 @@ void Game::ResetGame()
     spaceship.pcollidables = &collidables;
 
     
-    // Stable three body system https://math.stackexchange.com/questions/1613765/simple-stable-n-body-orbits-in-the-plane-with-some-fixed-bodies-allowed
-    // Place black hole in middle of world
-    double Gconstant = 1.0;
-    double orbitdist = 5.0;
-    double orbitalV = std::sqrt((Gconstant * blackhole.mass)/orbitdist);
-    //orbitalV = orbitalV*std::sqrt(orbitdist);
-    double orbitdist2 = 2.0;
-    double orbitalV2 = std::sqrt((Gconstant * blackhole.mass)/orbitdist2);
-    blackhole.reset();
-    blackhole.srcrect.x = 180;
-    blackhole.srcrect.y = 303;
-    blackhole.srcrect.h = 75;
-    blackhole.srcrect.w = 75;
-	blackhole.init("../simpleSpace_sheet.png", renderer);
-    blackhole.movementworldZ = 0.0;
-    const int blackholeradius = planetradius * 2.0;
-    blackhole.sizeX = blackholeradius;
-    blackhole.sizeY = blackholeradius;
-    blackhole.sizeZ = blackholeradius;
-    blackhole.posX = 0;
-    blackhole.posY = 0.0;
-    blackhole.posZ = 0.0;
-    blackhole.movementworldY = 0.0;//-0.0/std::sqrt(2.0);
-    blackhole.movementrotation = 0.1 * M_PI;
+    switch (level) {
+        case 0:
+            planets.clear();
+            planets.push_back(new Planet());
+            planets.push_back(new Planet());
+            for (auto p: planets)
+            {
+                attractors.push_back(p);
+                p->pattractors = &attractors;
+                collidables.push_back(p);
+                p->pcollidables = &collidables;
+                objects.push_back(p);
+                p->reset();
+            }
+            // Place black hole in middle of world
+            //orbitalV = orbitalV*std::sqrt(orbitdist);
+            blackhole.reset();
+            blackhole.srcrect.x = 180;
+            blackhole.srcrect.y = 303;
+            blackhole.srcrect.h = 75;
+            blackhole.srcrect.w = 75;
+            blackhole.init("../simpleSpace_sheet.png", renderer);
+            blackhole.movementworldZ = 0.0;
+            blackhole.sizeX = blackholeradius;
+            blackhole.sizeY = blackholeradius;
+            blackhole.sizeZ = blackholeradius;
+            blackhole.posX = 0;
+            blackhole.posY = 0.0;
+            blackhole.posZ = 0.0;
+            blackhole.movementworldY = 0.0;//-0.0/std::sqrt(2.0);
+            blackhole.movementrotation = 0.1 * M_PI;
 
 
-    planets.at(0)->srcrect.x = 108;
-    planets.at(0)->srcrect.y = 32;
-    planets.at(0)->srcrect.h = meteorheight;
-    planets.at(0)->srcrect.w = meteorwidth;
-    planets.at(0)->init(blackhole.texture);
-    planets.at(0)->sizeX = planetradius;
-    planets.at(0)->sizeY = planetradius;
-    planets.at(0)->sizeZ = planetradius;
-    planets.at(0)->posX = 0.0;
-    planets.at(0)->posY = 0.0;
-    planets.at(0)->posZ = orbitdist;
-    planets.at(0)->movementworldY = 0.0;//orbitalV;//1.0/std::sqrt(2.0);
-    planets.at(0)->movementrotation = M_PI * 1.0;
-    planets.at(0)->draw = true;
+            planets.at(0)->srcrect.x = 108;
+            planets.at(0)->srcrect.y = 32;
+            planets.at(0)->srcrect.h = meteorheight;
+            planets.at(0)->srcrect.w = meteorwidth;
+            planets.at(0)->init(blackhole.texture);
+            planets.at(0)->sizeX = planetradius;
+            planets.at(0)->sizeY = planetradius;
+            planets.at(0)->sizeZ = planetradius;
+            planets.at(0)->posX = 0.0;
+            planets.at(0)->posY = 0.0;
+            planets.at(0)->posZ = orbitdist;
+            planets.at(0)->movementworldY = 0.0;//orbitalV;//1.0/std::sqrt(2.0);
+            planets.at(0)->movementrotation = M_PI * 1.0;
+            planets.at(0)->draw = true;
 
 
-    planets.at(1)->srcrect.x = 144;
-    planets.at(1)->srcrect.y = 380;
-    planets.at(1)->srcrect.h = meteorheight;
-    planets.at(1)->srcrect.w = meteorwidth;
-    planets.at(1)->init(blackhole.texture);
-    planets.at(1)->sizeX = planetradius;
-    planets.at(1)->sizeY = planetradius;
-    planets.at(1)->sizeZ = planetradius;
-    planets.at(1)->posX = 0.0;
-    planets.at(1)->posY = 0.0;
-    planets.at(1)->posZ = -orbitdist2;
-    planets.at(1)->movementworldY = -orbitalV2 * 1.0;//1.0/std::sqrt(2.0);
-    planets.at(1)->movementrotation = M_PI * 0.5;
-    planets.at(1)->draw = true;
+            planets.at(1)->srcrect.x = 144;
+            planets.at(1)->srcrect.y = 380;
+            planets.at(1)->srcrect.h = meteorheight;
+            planets.at(1)->srcrect.w = meteorwidth;
+            planets.at(1)->init(blackhole.texture);
+            planets.at(1)->sizeX = planetradius;
+            planets.at(1)->sizeY = planetradius;
+            planets.at(1)->sizeZ = planetradius;
+            planets.at(1)->posX = 0.0;
+            planets.at(1)->posY = 0.0;
+            planets.at(1)->posZ = -orbitdist2;
+            planets.at(1)->movementworldY = -orbitalV2 * 1.0;//1.0/std::sqrt(2.0);
+            planets.at(1)->movementrotation = M_PI * 0.5;
+            planets.at(1)->draw = true;
 
-    spaceship.reset();
-    spaceship.srcrect.x = 96;
-    spaceship.srcrect.y = 380;
-    spaceship.srcrect.h = meteorheight;
-    spaceship.srcrect.w = meteorwidth;
-    spaceship.init(blackhole.texture);
-    spaceship.sizeX = planetradius;
-    spaceship.sizeY = planetradius;
-    spaceship.sizeZ = planetradius;
-    spaceship.posX = 0.0;
-    spaceship.posY = 0.0;
-    spaceship.posZ = orbitdist2 * 1.0;
-    spaceship.movementworldY = orbitalV2 * 1.0;//1.0/std::sqrt(2.0);
-    spaceship.movementrotation = 0.0;
+            spaceship.reset();
+            spaceship.srcrect.x = 96;
+            spaceship.srcrect.y = 380;
+            spaceship.srcrect.h = meteorheight;
+            spaceship.srcrect.w = meteorwidth;
+            spaceship.init(blackhole.texture);
+            spaceship.sizeX = planetradius;
+            spaceship.sizeY = planetradius;
+            spaceship.sizeZ = planetradius;
+            spaceship.posX = 0.0;
+            spaceship.posY = 0.0;
+            spaceship.posZ = orbitdist2 * 1.0;
+            spaceship.movementworldY = orbitalV2 * 1.0;//1.0/std::sqrt(2.0);
+            spaceship.movementrotation = 0.0;
 
+            break;
+        case 1:
+            planets.clear();
+            planets.push_back(new Planet());
+            for (auto p: planets)
+            {
+                attractors.push_back(p);
+                p->pattractors = &attractors;
+                collidables.push_back(p);
+                p->pcollidables = &collidables;
+                objects.push_back(p);
+                p->reset();
+            }
+            // Stable three body system https://math.stackexchange.com/questions/1613765/simple-stable-n-body-orbits-in-the-plane-with-some-fixed-bodies-allowed
+            double scale = 1;
+            blackhole.reset();
+            blackhole.mass = 4.0*scale;
+            blackhole._mass = 4.0*scale;
+            blackhole.srcrect.x = 180;
+            blackhole.srcrect.y = 303;
+            blackhole.srcrect.h = 75;
+            blackhole.srcrect.w = 75;
+            blackhole.init("../simpleSpace_sheet.png", renderer);
+            blackhole.movementworldZ = 0.0;
+            blackhole.sizeX = blackholeradius;
+            blackhole.sizeY = blackholeradius;
+            blackhole.sizeZ = blackholeradius;
+            blackhole.posX = 0;
+            blackhole.posY = 0.0;
+            blackhole.posZ = 0.0;
+            blackhole.movementworldZ = (-1.0/std::sqrt(2.0))*scale;
+            blackhole.movementrotation = 0.1 * M_PI;
+
+
+            planets.at(0)->mass = 4.0*scale;
+            planets.at(0)->_mass = 4.0*scale;
+            planets.at(0)->srcrect.x = 108;
+            planets.at(0)->srcrect.y = 32;
+            planets.at(0)->srcrect.h = meteorheight;
+            planets.at(0)->srcrect.w = meteorwidth;
+            planets.at(0)->init(blackhole.texture);
+            planets.at(0)->sizeX = planetradius;
+            planets.at(0)->sizeY = planetradius;
+            planets.at(0)->sizeZ = planetradius;
+            planets.at(0)->posX = 0.0;
+            planets.at(0)->posY = 1.0*scale;
+            planets.at(0)->posZ = 0.0;
+            planets.at(0)->movementworldZ = (1.0/std::sqrt(2.0))*scale;
+            planets.at(0)->movementrotation = M_PI * 1.0;
+            planets.at(0)->draw = true;
+
+
+//            planets.at(1)->mass = 0.0001*scale;
+//            planets.at(1)->_mass = 0.0001*scale;
+//            planets.at(1)->srcrect.x = 144;
+//            planets.at(1)->srcrect.y = 380;
+//            planets.at(1)->srcrect.h = meteorheight;
+//            planets.at(1)->srcrect.w = meteorwidth;
+//            planets.at(1)->init(blackhole.texture);
+//            planets.at(1)->sizeX = planetradius;
+//            planets.at(1)->sizeY = planetradius;
+//            planets.at(1)->sizeZ = planetradius;
+//            planets.at(1)->posX = 0.0;
+//            planets.at(1)->posY = (1/2)*scale;
+//            planets.at(1)->posZ = -std::sqrt(3/2)*scale;
+//            planets.at(1)->movementworldZ = -std::sqrt(3/2)*scale;//1.0/std::sqrt(2.0);
+//            planets.at(1)->movementrotation = M_PI * 0.5;
+//            planets.at(1)->draw = true;
+
+            spaceship.reset();
+            spaceship.mass = 0.0001 * scale;
+            spaceship.srcrect.x = 96;
+            spaceship.srcrect.y = 380;
+            spaceship.srcrect.h = meteorheight;
+            spaceship.srcrect.w = meteorwidth;
+            spaceship.init(blackhole.texture);
+            spaceship.sizeX = planetradius;
+            spaceship.sizeY = planetradius;
+            spaceship.sizeZ = planetradius;
+            spaceship.posX = 0.0;
+            spaceship.posY = (1.0/2.0)*scale;
+            spaceship.posZ = std::sqrt(3.0/2.0)*scale;
+            spaceship.movementworldY = -std::sqrt(3.0/2.0)*scale;//1.0/std::sqrt(2.0);
+            spaceship.movementrotation = 0.0;
+
+            break;
+    }
 
     const int backgroundsize = 300;
 
