@@ -23,10 +23,13 @@ void Consumer::update(double deltatime) {
             if (dist < eventhorizon)
             {
                 a->movementworldX += (dist / eventhorizon) / deltatime;
-                a->movementworldY *= (dist / eventhorizon) * deltatime;
-                a->movementworldZ *= (dist / eventhorizon) * deltatime;
+                a->movementworldY += dy * deltatime;
+                a->movementworldZ += dz * deltatime;
+                a->movementworldY += this->pobject->movementworldY * deltatime;
+                a->movementworldZ += this->pobject->movementworldZ * deltatime;
 //                a->movementworldY *= (eventhorizon-dist)-deltatime;
 //                a->movementworldZ *= (eventhorizon-dist)-deltatime;
+            }
                 if (a->posX > 500) {
                     for (int o = 0; o<pobjects->size(); o++)
                     {
@@ -38,7 +41,6 @@ void Consumer::update(double deltatime) {
                         }
                     }
                 }
-            }
         }
     }
 }
