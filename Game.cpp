@@ -37,7 +37,7 @@ double cameracceleration  = 0.0;
 
 SDL_Texture* fonttexture1, * fonttexture2, * fonttexture3, * fonttexture4, * fonttexture5, * fonttexture6, * fonttexture7, * fonttexture8;
 SDL_Rect fontrect1, fontrect2, fontrect3, fontrect4, fontrect5, fontrect6, fontrect7, fontrect8;
-TTF_Font* font;
+//TTF_Font* font;
 Mix_Music* mp3music;
 bool showstatustext = true;
 
@@ -90,27 +90,27 @@ void DrawCircle(SDL_Renderer * renderer, int32_t centreX, int32_t centreY, int32
 }
 
 // TODO: Move
-void get_text_and_rect(SDL_Renderer* renderer, int x, int y, char* text,
-	TTF_Font* font, SDL_Texture** texture, SDL_Rect* rect) {
-	if (*texture)
-	{
-		SDL_DestroyTexture(*texture);
-	}
-	int text_width;
-	int text_height;
-	SDL_Surface* surface;
-	SDL_Color textColor = { 255, 255, 255, 0 };
-
-	surface = TTF_RenderText_Solid(font, text, textColor);
-	*texture = SDL_CreateTextureFromSurface(renderer, surface);
-	text_width = surface->w;
-	text_height = surface->h;
-	SDL_FreeSurface(surface);
-	rect->x = x;
-	rect->y = y;
-	rect->w = text_width;
-	rect->h = text_height;
-}
+//void get_text_and_rect(SDL_Renderer* renderer, int x, int y, char* text,
+//	TTF_Font* font, SDL_Texture** texture, SDL_Rect* rect) {
+//	if (*texture)
+//	{
+//		SDL_DestroyTexture(*texture);
+//	}
+//	int text_width;
+//	int text_height;
+//	SDL_Surface* surface;
+//	SDL_Color textColor = { 255, 255, 255, 0 };
+//
+//	surface = TTF_RenderText_Solid(font, text, textColor);
+//	*texture = SDL_CreateTextureFromSurface(renderer, surface);
+//	text_width = surface->w;
+//	text_height = surface->h;
+//	SDL_FreeSurface(surface);
+//	rect->x = x;
+//	rect->y = y;
+//	rect->w = text_width;
+//	rect->h = text_height;
+//}
 
 //SDL_Texture * robot_tex;
 //SDL_Rect robot_srcRect, robot_destRect;
@@ -147,12 +147,12 @@ void Game::init(const char* title, int width, int height, bool fullscreen)
 	}
 
 	/* Inint TTF. */
-	TTF_Init();
-	font = TTF_OpenFont("../JosefinSans-Regular.ttf", 24);
-	if (font == NULL) {
-		fprintf(stderr, "error: font not found\n");
-		exit(EXIT_FAILURE);
-	}
+//	TTF_Init();
+//	font = TTF_OpenFont("../JosefinSans-Regular.ttf", 24);
+//	if (font == NULL) {
+//		fprintf(stderr, "error: font not found\n");
+//		exit(EXIT_FAILURE);
+//	}
 
 	gamerunning = true; // Start paused
 
@@ -191,7 +191,7 @@ void Game::init(const char* title, int width, int height, bool fullscreen)
 	
 }
 
-// level = 0, 2, 3, 4 is good
+// level = 0=tutorial, 2=eliptical, 3=two holes, 4=stable four planet is good
 int level = 4;
 int lives = 3;
 void Game::ResetGame()
@@ -1019,18 +1019,18 @@ void Game::update(double deltatime)
 		if (titlescreentimer <= 0)
 		{
 			// Show instructions
-			get_text_and_rect(renderer, 0, 0, "Level 1", font, &fonttexture1, &fontrect1);
-			get_text_and_rect(renderer, 0, fontrect1.y + fontrect1.h, "Lives 3", font, &fonttexture2, &fontrect2);
-			get_text_and_rect(renderer, 0, SCREENHEIGHT - fontrect1.h, "IAS: km/h", font, &fonttexture3, &fontrect3);
-			get_text_and_rect(renderer, (SCREENWIDTH / 2) - fontrect1.w, SCREENHEIGHT - fontrect1.h, "ALT: m", font, &fonttexture4, &fontrect4);
-			get_text_and_rect(renderer, (SCREENWIDTH - fontrect1.w), SCREENHEIGHT - fontrect1.h, "DIST: m", font, &fonttexture5, &fontrect5);
-			get_text_and_rect(renderer, (SCREENWIDTH / 2) - fontrect1.w, (SCREENHEIGHT / 2) - fontrect1.h, "Press R to start", font, &fonttexture6, &fontrect6);
-			get_text_and_rect(renderer, (SCREENWIDTH / 2) - (fontrect1.w / 1.0), (SCREENHEIGHT / 2) - (fontrect1.h * 2.0), "Press Q to quit", font, &fonttexture7, &fontrect7);
+//			get_text_and_rect(renderer, 0, 0, "Level 1", font, &fonttexture1, &fontrect1);
+//			get_text_and_rect(renderer, 0, fontrect1.y + fontrect1.h, "Lives 3", font, &fonttexture2, &fontrect2);
+//			get_text_and_rect(renderer, 0, SCREENHEIGHT - fontrect1.h, "IAS: km/h", font, &fonttexture3, &fontrect3);
+//			get_text_and_rect(renderer, (SCREENWIDTH / 2) - fontrect1.w, SCREENHEIGHT - fontrect1.h, "ALT: m", font, &fonttexture4, &fontrect4);
+//			get_text_and_rect(renderer, (SCREENWIDTH - fontrect1.w), SCREENHEIGHT - fontrect1.h, "DIST: m", font, &fonttexture5, &fontrect5);
+//			get_text_and_rect(renderer, (SCREENWIDTH / 2) - fontrect1.w, (SCREENHEIGHT / 2) - fontrect1.h, "Press R to start", font, &fonttexture6, &fontrect6);
+//			get_text_and_rect(renderer, (SCREENWIDTH / 2) - (fontrect1.w / 1.0), (SCREENHEIGHT / 2) - (fontrect1.h * 2.0), "Press Q to quit", font, &fonttexture7, &fontrect7);
 			showtitlescreen = false;
 		}
 		else {
 			// Show title screen
-			get_text_and_rect(renderer, (SCREENWIDTH* (titlescreentimer / (5.0 - 1.0)))-(fontrect8.w), (SCREENHEIGHT / 2)-fontrect8.h, "RB05SIM", font, &fonttexture8, &fontrect8);
+//			get_text_and_rect(renderer, (SCREENWIDTH* (titlescreentimer / (5.0 - 1.0)))-(fontrect8.w), (SCREENHEIGHT / 2)-fontrect8.h, "RB05SIM", font, &fonttexture8, &fontrect8);
 		}
 	}
 }
@@ -1081,8 +1081,8 @@ void Game::render()
 		char buff[1024];
 
 		std::sprintf(buff,"Score: %i",Consumer::getscore());
-        get_text_and_rect(renderer, 10, 10, buff, font, &fonttexture1, &fontrect1);
-        SDL_RenderCopy(renderer, fonttexture1, NULL, &fontrect1);
+//        get_text_and_rect(renderer, 10, 10, buff, font, &fonttexture1, &fontrect1);
+//        SDL_RenderCopy(renderer, fonttexture1, NULL, &fontrect1);
 		//	vviring.render(renderer, camera);
 	}
 

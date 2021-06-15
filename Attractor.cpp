@@ -12,7 +12,7 @@ Attractor::Attractor(Object * obj, double mass):pobject(obj), mass(mass) {
 void Attractor::update(double deltatime) {
     for (auto a : *pattractors)
     {
-        if (a->pobject != this->pobject && this->pobject->draw)
+        if (a->pobject != this->pobject && this->pobject->draw && a->pobject->draw)
         {
             double dx = a->pobject->posX - this->pobject->posX;
             double dy = a->pobject->posY - this->pobject->posY;
