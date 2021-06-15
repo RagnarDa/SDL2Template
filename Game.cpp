@@ -409,7 +409,7 @@ void Game::update(double deltatime)
 	        planet2.update(deltatime);
 	        spaceship.update(deltatime);
 	        const double spaceshipeasyaccel = 1.0;
-	        const double spaceshipturnspeed = M_PI_2;
+	        const double spaceshipturnspeed = M_PI/2;
         const Uint8* keystates = SDL_GetKeyboardState(NULL);
         if (keystates[SDL_SCANCODE_A] || keystates[SDL_SCANCODE_LEFT]) {
             spaceship.movementrotation -= spaceshipturnspeed * deltatime;

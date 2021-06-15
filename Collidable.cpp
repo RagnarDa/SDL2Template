@@ -4,6 +4,7 @@
 
 #include "Collidable.h"
 #include <cmath>
+#include <cassert>
 
 Collidable::Collidable(Object * obj, double mass) : pobject(obj), _mass(mass){
     assert(mass>0);

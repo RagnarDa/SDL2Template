@@ -9,6 +9,9 @@
 #include <string>
 #include <SDL.h>
 #include "rotmat.h"
+#ifndef M_PI
+#define M_PI 3.14159265359
+#endif
 //#include "Camera.h"
 
 class Camera;
