@@ -7,6 +7,8 @@
 Blackhole::Blackhole(double mass) : Attractor(this, mass), Consumer(this, mass) {}
 
 void Blackhole::update(double deltatime) {
+    if (!draw)
+        return;
     Attractor::update(deltatime);
     Object::update(deltatime);
     Consumer::update(deltatime);
