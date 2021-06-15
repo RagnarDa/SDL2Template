@@ -59,14 +59,14 @@ int main(int argc, char *argv[])
     /* Set the external music player, if any */
     Mix_SetMusicCMD(SDL_getenv("MUSIC_CMD"));
 
-    Mix_Music *music = Mix_LoadMUS("../dungeon_castle.mp3");
+    Mix_Music *music = Mix_LoadMUS("../strauss.mid");
     if (music == NULL) {
         SDL_Log("Couldn't load music %s", SDL_GetError());
         Mix_CloseAudio();
         SDL_Quit();
         exit(1);
     }
-    Mix_FadeInMusic(music,0,2000);
+    Mix_FadeInMusic(music,10,2000);
 
 //    /* Init TTF. */
 //    TTF_Init();
