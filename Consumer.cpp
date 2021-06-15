@@ -22,15 +22,17 @@ void Consumer::update(double deltatime) {
             const double eventhorizon = 1.0;
             if (dist < eventhorizon)
             {
-                a->movementworldX += (dist / eventhorizon) / deltatime;
-                a->movementworldY += dy * deltatime;
-                a->movementworldZ += dz * deltatime;
-                a->movementworldY += this->pobject->movementworldY * deltatime;
-                a->movementworldZ += this->pobject->movementworldZ * deltatime;
+                a->movementworldX += deltatime * 100.0;
+//                a->movementworldY -= dy * deltatime * 0.5;
+//                a->movementworldZ -= dz * deltatime * 0.5;
+                a->posY -= dy * deltatime;
+                a->posZ -= dz * deltatime;
+//                a->movementworldY += this->pobject->movementworldY * deltatime;
+//                a->movementworldZ += this->pobject->movementworldZ * deltatime;
 //                a->movementworldY *= (eventhorizon-dist)-deltatime;
 //                a->movementworldZ *= (eventhorizon-dist)-deltatime;
             }
-                if (a->posX > 500) {
+                if (a->posX > 150) {
                     for (int o = 0; o<pobjects->size(); o++)
                     {
                         if (pobjects->at(o) == a) {
