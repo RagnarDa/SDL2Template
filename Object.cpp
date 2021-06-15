@@ -160,5 +160,31 @@ Object::~Object() {
 }
 
 Object::Object() :texture(nullptr),srcrect(),destrect(),orientation(0.0,0.0,0.0){
+    this->reset();
+}
+
+void Object::reset() {
+    this->orientation = rotmat(0.0,0.0,0.0);
+    this->posX = 0.0;
+    this->posY = 0.0;
+    this->posZ = 0.0;
+    this->rotation = 0.0;
+    this->movementselfX = 0.0;
+    this->movementselfY = 0.0;
+    this->movementselfZ = 0.0;
+    this->movementworldY = 0.0;
+    this->movementworldZ = 0.0;
+    this->movementworldX = 0.0;
+    this->movementrotation = 0.0;
+    this->pitch = 0.0;
+    this->draw = true;
+    this->yaw = 0.0;
+    this->pitchSpeed = 0.0;
+    this->roll = 0.0;
+    this->rollSpeed = 0.0;
+    this->yawSpeed = 0.0;
+    this->sizeX = 1.0;
+    this->sizeY = 1.0;
+    this->sizeZ = 1.0;
 }
 

@@ -28,4 +28,6 @@ private:
 	int cnt = 0;
 	SDL_Window *window;
 	SDL_Renderer *renderer;
+
+    double OrbitalV(double Gconstant, double orbitdist, double centermass) const;
 };

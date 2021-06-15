@@ -48,6 +48,7 @@ public:
 
 	void init(SDL_Texture *tex);
 	bool draw = true;
+	void reset();
 };
 
 
