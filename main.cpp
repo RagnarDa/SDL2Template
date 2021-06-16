@@ -13,21 +13,21 @@ int main(int argc, char *argv[])
 {
 
     // retutns zero on success else non-zero
-    if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-        printf("error initializing SDL: %s\n", SDL_GetError());
-    }
-    SDL_Window* win = SDL_CreateWindow("GAME",
-                                       SDL_WINDOWPOS_CENTERED,
-                                       SDL_WINDOWPOS_CENTERED,
-                                       1000, 1000, 0);
-
-    SDL_Renderer *renderer = SDL_CreateRenderer(win, -1, 0);
-    if (renderer)
-    {
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    }
-
-
+//    if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
+//        printf("error initializing SDL: %s\n", SDL_GetError());
+//    }
+//    //SDL_Window* win = SDL_CreateWindow("GAME",
+//                                       SDL_WINDOWPOS_CENTERED,
+//                                       SDL_WINDOWPOS_CENTERED,
+//                                       1000, 1000, 0);
+//
+//    SDL_Renderer *renderer = SDL_CreateRenderer(win, -1, 0);
+//    if (renderer)
+//    {
+//        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+//    }
+//
+//
     int audio_rate;
     Uint16 audio_format;
     int audio_channels;
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     /* Set the external music player, if any */
     Mix_SetMusicCMD(SDL_getenv("MUSIC_CMD"));
 
-    Mix_Music *music = Mix_LoadMUS("../strauss.mid");
+    Mix_Music *music = Mix_LoadMUS("strauss.mid");
     if (music == NULL) {
         SDL_Log("Couldn't load music %s", SDL_GetError());
         Mix_CloseAudio();
@@ -68,66 +68,68 @@ int main(int argc, char *argv[])
     }
     Mix_FadeInMusic(music,10,2000);
 
-//    /* Init TTF. */
-//    TTF_Init();
-//    TTF_Font* font = TTF_OpenFont("../JosefinSans-Regular.ttf", 24);
-//    if (font == NULL) {
-//        fprintf(stderr, "error: font not found\n");
-//        exit(EXIT_FAILURE);
+    
+//
+////    /* Init TTF. */
+////    TTF_Init();
+////    TTF_Font* font = TTF_OpenFont("../JosefinSans-Regular.ttf", 24);
+////    if (font == NULL) {
+////        fprintf(stderr, "error: font not found\n");
+////        exit(EXIT_FAILURE);
+////    }
+//
+//    /* Clear screen */
+//    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+//    SDL_RenderClear(renderer);
+//
+//
+////    char buff[100];
+////    std::sprintf(buff, "Hello World!", 1);
+////    SDL_Color textColor = { 255, 255, 255, 0 };
+////    SDL_Surface* surface = TTF_RenderText_Solid(font, buff, textColor);
+////    SDL_Texture * fonttexture = SDL_CreateTextureFromSurface(renderer, surface);;
+////    SDL_Rect fontrect;
+////    fontrect.x = 100;
+////    fontrect.y = 100;
+////    fontrect.w = 200;
+////    fontrect.h = 200;
+//
+////    SDL_RenderCopy(renderer, fonttexture, NULL, &fontrect);
+//
+//    /* Display image */
+//    IMG_Init(IMG_INIT_PNG) ;
+//    SDL_Surface *image = IMG_Load("../goblin.png");
+//    if(!image) {
+//        printf("IMG_Load: %s\n", IMG_GetError());
+//        exit(1);
 //    }
-
-    /* Clear screen */
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-    SDL_RenderClear(renderer);
-
-
-//    char buff[100];
-//    std::sprintf(buff, "Hello World!", 1);
-//    SDL_Color textColor = { 255, 255, 255, 0 };
-//    SDL_Surface* surface = TTF_RenderText_Solid(font, buff, textColor);
-//    SDL_Texture * fonttexture = SDL_CreateTextureFromSurface(renderer, surface);;
-//    SDL_Rect fontrect;
-//    fontrect.x = 100;
-//    fontrect.y = 100;
-//    fontrect.w = 200;
-//    fontrect.h = 200;
-
-//    SDL_RenderCopy(renderer, fonttexture, NULL, &fontrect);
-
-    /* Display image */
-    IMG_Init(IMG_INIT_PNG) ;
-    SDL_Surface *image = IMG_Load("../goblin.png");
-    if(!image) {
-        printf("IMG_Load: %s\n", IMG_GetError());
-        exit(1);
-    }
-    SDL_Texture * imagetexture = SDL_CreateTextureFromSurface(renderer, image);;
-    SDL_Rect imagerect;
-    imagerect.x = 200;
-    imagerect.y = 200;
-    imagerect.w = 200;
-    imagerect.h = 200;
-    SDL_Rect srcrect;
-    const int goblinwidth = 704/11;
-    const int goblinheight = 320/5;
-    int goblinanimx = 0;
-    const int goblinanimy = 0;
-    srcrect.x = goblinwidth * goblinanimx;
-    srcrect.y = goblinheight * goblinanimy;
-    srcrect.w = goblinwidth;
-    srcrect.h = goblinheight;
-    SDL_RenderCopy(renderer, imagetexture, &srcrect, &imagerect);
-
-    /* GFX demo */
-    Sint16 vx[] = { 100, 300, 200 };
-    Sint16 vy[] = { 100, 100, 300 };
-    aapolygonColor(renderer, vx, vy, 3, 0xFFFF0000);
-    Sint16 vx2[] = { 100, 600, 200 };
-    Sint16 vy2[] = { 100, 600, 300 };
-    polygonColor(renderer, vx2, vy2, 3, 0xFFFF0000);
-
-    /* Draw */
-    SDL_RenderPresent(renderer);
+//    SDL_Texture * imagetexture = SDL_CreateTextureFromSurface(renderer, image);;
+//    SDL_Rect imagerect;
+//    imagerect.x = 200;
+//    imagerect.y = 200;
+//    imagerect.w = 200;
+//    imagerect.h = 200;
+//    SDL_Rect srcrect;
+//    const int goblinwidth = 704/11;
+//    const int goblinheight = 320/5;
+//    int goblinanimx = 0;
+//    const int goblinanimy = 0;
+//    srcrect.x = goblinwidth * goblinanimx;
+//    srcrect.y = goblinheight * goblinanimy;
+//    srcrect.w = goblinwidth;
+//    srcrect.h = goblinheight;
+//    SDL_RenderCopy(renderer, imagetexture, &srcrect, &imagerect);
+//
+//    /* GFX demo */
+//    Sint16 vx[] = { 100, 300, 200 };
+//    Sint16 vy[] = { 100, 100, 300 };
+//    aapolygonColor(renderer, vx, vy, 3, 0xFFFF0000);
+//    Sint16 vx2[] = { 100, 600, 200 };
+//    Sint16 vy2[] = { 100, 600, 300 };
+//    polygonColor(renderer, vx2, vy2, 3, 0xFFFF0000);
+//
+//    /* Draw */
+//    SDL_RenderPresent(renderer);
 
     SDL_Event e;
     bool quit = false;
@@ -168,6 +170,7 @@ int main(int argc, char *argv[])
         Mix_FreeMusic(music);
         music = NULL;
     }
+   
     Mix_CloseAudio();
     SDL_Quit();
 

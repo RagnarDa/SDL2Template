@@ -17,6 +17,7 @@ public:
     double _mass;
     std::vector<Collidable*> * pcollidables;
     Object * pobject;
+    static bool CollisionHasOccured();
 };
 
 

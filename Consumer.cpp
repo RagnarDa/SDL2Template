@@ -6,6 +6,7 @@
 
 #include <cmath>
 int score = 0;
+bool hasconsumtionoccured = false;
 
 Consumer::Consumer(Object * obj, double mass):pobject(obj), _mass(mass) {
 }
@@ -22,6 +23,9 @@ void Consumer::update(double deltatime) {
             const double eventhorizon = 1.0;
             if (dist < eventhorizon)
             {
+                a->sizeX *= 1.0 - (0.9 * deltatime);
+                a->sizeY *= 1.0 - (0.9 * deltatime);
+                a->sizeZ *= 1.0 - (0.9 * deltatime);
                 a->movementworldX += deltatime * 100.0;
 //                a->movementworldY -= dy * deltatime * 0.5;
 //                a->movementworldZ -= dz * deltatime * 0.5;
@@ -32,7 +36,7 @@ void Consumer::update(double deltatime) {
 //                a->movementworldY *= (eventhorizon-dist)-deltatime;
 //                a->movementworldZ *= (eventhorizon-dist)-deltatime;
             }
-                if (a->posX > 150) {
+                if (a->sizeY < 0.1 || a->sizeZ < 0.1 || a->posX > 150) {
                     for (int o = 0; o<pobjects->size(); o++)
                     {
                         if (pobjects->at(o) == a) {
@@ -40,6 +44,7 @@ void Consumer::update(double deltatime) {
                             pobjects->erase(pobjects->begin() + o);
                             a->draw = false;
                             score++;
+                            hasconsumtionoccured = true; // Play sound
                         }
                     }
                 }
@@ -49,4 +54,15 @@ void Consumer::update(double deltatime) {
 
 int Consumer::getscore() {
     return score;
+}
+
+/// <summary>
+/// Resets on every call
+/// </summary>
+/// <returns></returns>
+bool Consumer::HasConsumtionOccured()
+{
+    bool hasocc = hasconsumtionoccured;
+    hasconsumtionoccured = false;
+    return hasocc;
 }

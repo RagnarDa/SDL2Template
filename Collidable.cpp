@@ -5,6 +5,7 @@
 #include "Collidable.h"
 #include <cmath>
 #include <cassert>
+bool collisionhasoccured = false;
 
 Collidable::Collidable(Object * obj, double mass) : pobject(obj), _mass(mass){
     assert(mass>0);
@@ -99,7 +100,22 @@ void Collidable::update(double deltatime) {
                 prot *= 1.0;
                 this->pobject->movementrotation -= prot * a->_mass;
                 //a->pobject->movementrotation -= prot * this->_mass;
+
+                // For playing sound
+                collisionhasoccured = true;
             }
         }
     }
+}
+
+
+/// <summary>
+/// Has occured since last call to this function
+/// </summary>
+/// <returns></returns>
+bool Collidable::CollisionHasOccured()
+{
+    bool hasoc = collisionhasoccured;
+    collisionhasoccured = false;
+    return hasoc;
 }

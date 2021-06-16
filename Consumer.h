@@ -17,6 +17,7 @@ public:
     std::vector<Object*> * pobjects;
     Object * pobject;
     static int getscore();
+    static bool HasConsumtionOccured();
 };
 
 

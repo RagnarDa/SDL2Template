@@ -39,6 +39,8 @@ SDL_Texture* fonttexture1, * fonttexture2, * fonttexture3, * fonttexture4, * fon
 SDL_Rect fontrect1, fontrect2, fontrect3, fontrect4, fontrect5, fontrect6, fontrect7, fontrect8;
 //TTF_Font* font;
 Mix_Music* mp3music;
+Mix_Chunk* pong = NULL;
+Mix_Chunk* suck = NULL;
 bool showstatustext = true;
 
 const double camerarotspeed = (5.0 / 180.0)*M_PI;
@@ -162,24 +164,22 @@ void Game::init(const char* title, int width, int height, bool fullscreen)
 
 	int result;
 
-	auto mixinitflags = /*MIX_INIT_OGG | */MIX_INIT_MP3;
-	if (mixinitflags != (result = Mix_Init(mixinitflags))) {
-		printf("Could not initialize mixer (result: %d).\n", result);
-		printf("Mix_Init: %s\n", Mix_GetError());
-		//exit(1);
-	}
-	assert(0 == Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 512));
-	mp3music = Mix_LoadMUS("res/music.mp3");
-	if (!mp3music) {
-		std::cerr << "Failed to load music. " << Mix_GetError() << " Using fallback wav" << std::endl;
-		usemp3 = false;
-//			exit(1);
-	}
-	if (usemp3 && Mix_PlayMusic(mp3music, -1) == -1) {
-		printf("Mix_PlayMusic: %s\n", Mix_GetError());
-		usemp3 = false;
-		// well, there's no music, but most games don't break without music...
-	}
+
+
+    pong = Mix_LoadWAV("BalloonPop1.wav");
+    if (pong == NULL)
+    {
+        printf("Failed to load pong sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+        exit(2);
+    }
+    suck = Mix_LoadWAV("highDown.wav");
+    if (suck == NULL)
+    {
+        printf("Failed to load suck sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+        exit(3);
+    }
+    //Mix_PlayChannel(-1, pong, 0);
+    //Mix_PlayChannel(-1, suck, 0);
 
 	IMG_Init(IMG_INIT_PNG) ;
 //	SDL_Surface * tmprobot_surface = IMG_Load("planet.png");
@@ -262,7 +262,7 @@ void Game::ResetGame()
             blackhole.srcrect.y = 303;
             blackhole.srcrect.h = 75;
             blackhole.srcrect.w = 75;
-            blackhole.init("../simpleSpace_sheet.png", renderer);
+            blackhole.init("simpleSpace_sheet.png", renderer);
             blackhole.movementworldZ = 0.0;
             blackhole.sizeX = blackholeradius;
             blackhole.sizeY = blackholeradius;
@@ -342,7 +342,7 @@ void Game::ResetGame()
             blackhole.srcrect.y = 303;
             blackhole.srcrect.h = 75;
             blackhole.srcrect.w = 75;
-            blackhole.init("../simpleSpace_sheet.png", renderer);
+            blackhole.init("simpleSpace_sheet.png", renderer);
             blackhole.movementworldZ = 0.0;
             blackhole.sizeX = blackholeradius;
             blackhole.sizeY = blackholeradius;
@@ -428,7 +428,7 @@ void Game::ResetGame()
             blackhole.srcrect.y = 303;
             blackhole.srcrect.h = 75;
             blackhole.srcrect.w = 75;
-            blackhole.init("../simpleSpace_sheet.png", renderer);
+            blackhole.init("simpleSpace_sheet.png", renderer);
             blackhole.movementworldZ = 0.0;
             blackhole.sizeX = blackholeradius;
             blackhole.sizeY = blackholeradius;
@@ -520,7 +520,7 @@ void Game::ResetGame()
             blackhole.srcrect.y = 303;
             blackhole.srcrect.h = 75;
             blackhole.srcrect.w = 75;
-            blackhole.init("../simpleSpace_sheet.png", renderer);
+            blackhole.init("simpleSpace_sheet.png", renderer);
             blackhole.movementworldZ = 0.0;
             blackhole.sizeX = blackholeradius;
             blackhole.sizeY = blackholeradius;
@@ -666,7 +666,7 @@ void Game::ResetGame()
             blackhole.srcrect.y = 303;
             blackhole.srcrect.h = 75;
             blackhole.srcrect.w = 75;
-            blackhole.init("../simpleSpace_sheet.png", renderer);
+            blackhole.init("simpleSpace_sheet.png", renderer);
             blackhole.movementworldZ = 0.0;
             blackhole.sizeX = blackholeradius;
             blackhole.sizeY = blackholeradius;
@@ -1023,6 +1023,14 @@ void Game::update(double deltatime)
             if (level < 4)
                 this->ResetGame();
         }
+        if (Collidable::CollisionHasOccured())
+        {
+            Mix_PlayChannel(-1, pong, 0);
+        }
+        if (Consumer::HasConsumtionOccured())
+        {
+            Mix_PlayChannel(-1, suck, 0);
+        }
 	} else if(showtitlescreen)
 	{
 		titlescreentimer -= deltatime;
@@ -1188,7 +1196,8 @@ void Game::clean()
 	    p->~Planet();
     }
 	spaceship.~Spaceship();
-	
+ Mix_FreeChunk(pong);
+    Mix_FreeChunk(suck);	
 	if (renderer) {
 		SDL_DestroyRenderer(renderer);
 	}
