@@ -5,6 +5,7 @@
 #include "Attractor.h"
 #include <vector>
 #include <cmath>
+#include <cassert>
 
 Attractor::Attractor(Object * obj, double mass):pobject(obj), mass(mass) {
 }
