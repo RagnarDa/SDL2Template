@@ -192,7 +192,7 @@ void Game::init(const char* title, int width, int height, bool fullscreen)
 }
 
 // level = 0=tutorial, 2=eliptical, 3=two holes, 4=stable four planet is good
-int level = 4;
+int level = 0;
 int lives = 3;
 void Game::ResetGame()
 {
@@ -322,7 +322,7 @@ void Game::ResetGame()
             spaceship.movementrotation = 0.0;
 
             break;
-        case 1: {
+        case -1: {
             planets.clear();
             planets.push_back(new Planet());
             for (auto p: planets) {
@@ -408,7 +408,7 @@ void Game::ResetGame()
         }
             break;
 
-        case 2:
+        case 1:
             planets.clear();
             planets.push_back(new Planet());
             planets.push_back(new Planet());
@@ -638,7 +638,7 @@ void Game::ResetGame()
 
     }
             break;
-        case 4:
+        case 2:
         {
             // What if no blackhole?
             planets.clear();
@@ -965,15 +965,18 @@ void Game::update(double deltatime)
 	        blackhole.update(deltatime);
 	        blackhole2.update(deltatime);
 	        bool isoutside = false;
+	        int planetsalive = 0;
 	        for (auto & p:planets)
             {
 	            p->update(deltatime);
 	            if (abs(p->posY) > gameworldsize/4 || abs(p->posZ) > gameworldsize/4)
 	                isoutside = true;
+	            if (p->draw)
+	                planetsalive++;
             }
 	        spaceship.update(deltatime);
             if (abs(spaceship.posY) > gameworldsize/4 || abs(spaceship.posZ) > gameworldsize/4)
-            isoutside = true;
+                isoutside = true;
             if (isoutside)
                 ResetGame();
         engineplume.posY = spaceship.posY;
@@ -1012,6 +1015,13 @@ void Game::update(double deltatime)
             // Means player has been consumed by black hole
             // Reset game
             this->ResetGame();
+        }
+        if (planetsalive <= 0)
+        {
+            // Advance to next level
+            level++;
+            if (level < 4)
+                this->ResetGame();
         }
 	} else if(showtitlescreen)
 	{
