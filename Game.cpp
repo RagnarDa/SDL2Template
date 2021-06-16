@@ -37,12 +37,13 @@ double cameracceleration  = 0.0;
 
 SDL_Texture* fonttexture1, * fonttexture2, * fonttexture3, * fonttexture4, * fonttexture5, * fonttexture6, * fonttexture7, * fonttexture8;
 SDL_Rect fontrect1, fontrect2, fontrect3, fontrect4, fontrect5, fontrect6, fontrect7, fontrect8;
-TTF_Font* font;
+//TTF_Font* font;
 Mix_Music* mp3music;
 bool showstatustext = true;
 
 const double camerarotspeed = (5.0 / 180.0)*M_PI;
 const double robotturnspeed = (0.3 / 180.0)*M_PI;
+const int gameworldsize = 300;
 bool gamerunning = true;
 double alpha = ((2.0/180.0)*M_PI);
 double robottimer = 0;
@@ -89,27 +90,27 @@ void DrawCircle(SDL_Renderer * renderer, int32_t centreX, int32_t centreY, int32
 }
 
 // TODO: Move
-void get_text_and_rect(SDL_Renderer* renderer, int x, int y, char* text,
-	TTF_Font* font, SDL_Texture** texture, SDL_Rect* rect) {
-	if (*texture)
-	{
-		SDL_DestroyTexture(*texture);
-	}
-	int text_width;
-	int text_height;
-	SDL_Surface* surface;
-	SDL_Color textColor = { 255, 255, 255, 0 };
-
-	surface = TTF_RenderText_Solid(font, text, textColor);
-	*texture = SDL_CreateTextureFromSurface(renderer, surface);
-	text_width = surface->w;
-	text_height = surface->h;
-	SDL_FreeSurface(surface);
-	rect->x = x;
-	rect->y = y;
-	rect->w = text_width;
-	rect->h = text_height;
-}
+//void get_text_and_rect(SDL_Renderer* renderer, int x, int y, char* text,
+//	TTF_Font* font, SDL_Texture** texture, SDL_Rect* rect) {
+//	if (*texture)
+//	{
+//		SDL_DestroyTexture(*texture);
+//	}
+//	int text_width;
+//	int text_height;
+//	SDL_Surface* surface;
+//	SDL_Color textColor = { 255, 255, 255, 0 };
+//
+//	surface = TTF_RenderText_Solid(font, text, textColor);
+//	*texture = SDL_CreateTextureFromSurface(renderer, surface);
+//	text_width = surface->w;
+//	text_height = surface->h;
+//	SDL_FreeSurface(surface);
+//	rect->x = x;
+//	rect->y = y;
+//	rect->w = text_width;
+//	rect->h = text_height;
+//}
 
 //SDL_Texture * robot_tex;
 //SDL_Rect robot_srcRect, robot_destRect;
@@ -146,12 +147,12 @@ void Game::init(const char* title, int width, int height, bool fullscreen)
 	}
 
 	/* Inint TTF. */
-	TTF_Init();
-	font = TTF_OpenFont("../JosefinSans-Regular.ttf", 24);
-	if (font == NULL) {
-		fprintf(stderr, "error: font not found\n");
-		exit(EXIT_FAILURE);
-	}
+//	TTF_Init();
+//	font = TTF_OpenFont("../JosefinSans-Regular.ttf", 24);
+//	if (font == NULL) {
+//		fprintf(stderr, "error: font not found\n");
+//		exit(EXIT_FAILURE);
+//	}
 
 	gamerunning = true; // Start paused
 
@@ -190,7 +191,8 @@ void Game::init(const char* title, int width, int height, bool fullscreen)
 	
 }
 
-int level = 3;
+// level = 0=tutorial, 2=eliptical, 3=two holes, 4=stable four planet is good
+int level = 0;
 int lives = 3;
 void Game::ResetGame()
 {
@@ -272,6 +274,7 @@ void Game::ResetGame()
             blackhole.movementrotation = 0.1 * M_PI;
 
 
+            blackhole2.draw = false;
             planets.at(0)->srcrect.x = 108;
             planets.at(0)->srcrect.y = 32;
             planets.at(0)->srcrect.h = meteorheight;
@@ -319,7 +322,7 @@ void Game::ResetGame()
             spaceship.movementrotation = 0.0;
 
             break;
-        case 1: {
+        case -1: {
             planets.clear();
             planets.push_back(new Planet());
             for (auto p: planets) {
@@ -350,6 +353,7 @@ void Game::ResetGame()
             blackhole.movementworldZ = (-1.0 / std::sqrt(2.0)) * scale;
             blackhole.movementrotation = 0.1 * M_PI;
 
+            blackhole2.draw = false;
 
             planets.at(0)->mass = 4.0 * scale;
             planets.at(0)->_mass = 4.0 * scale;
@@ -404,7 +408,7 @@ void Game::ResetGame()
         }
             break;
 
-        case 2:
+        case 1:
             planets.clear();
             planets.push_back(new Planet());
             planets.push_back(new Planet());
@@ -435,6 +439,7 @@ void Game::ResetGame()
             blackhole.movementworldZ = 0.0;
             blackhole.movementrotation = 0.1 * M_PI;
 
+            blackhole2.draw = false;
 
             planets.at(0)->mass = planetmass;
             planets.at(0)->_mass = planetmass;
@@ -633,9 +638,158 @@ void Game::ResetGame()
 
     }
             break;
+        case 2:
+        {
+            // What if no blackhole?
+            planets.clear();
+            planets.push_back(new Planet());
+            planets.push_back(new Planet());
+            planets.push_back(new Planet());
+            planets.push_back(new Planet());
+            //planets.push_back(new Planet());
+            for (auto p: planets) {
+                attractors.push_back(p);
+                p->pattractors = &attractors;
+                collidables.push_back(p);
+                p->pcollidables = &collidables;
+                objects.push_back(p);
+                p->reset();
+            }
+
+            double orbitdh = 4;
+            double orbitvbh = OrbitalV(Gconstant,orbitdh*1.0, 1.0);
+            blackhole.reset();
+            blackhole.draw = true;
+            blackhole.mass = 1.0;
+            blackhole._mass = 1.0;
+            blackhole.srcrect.x = 180;
+            blackhole.srcrect.y = 303;
+            blackhole.srcrect.h = 75;
+            blackhole.srcrect.w = 75;
+            blackhole.init("../simpleSpace_sheet.png", renderer);
+            blackhole.movementworldZ = 0.0;
+            blackhole.sizeX = blackholeradius;
+            blackhole.sizeY = blackholeradius;
+            blackhole.sizeZ = blackholeradius;
+            blackhole.posX = 0;
+            blackhole.posY = 0.0;
+            blackhole.posZ = 0.0;
+            blackhole.movementworldY = 0.0;
+            blackhole.movementrotation = -0.2 * M_PI;
+
+            blackhole2.reset();
+            blackhole2.draw = false;
+
+//            blackhole2.reset();
+//            blackhole2.mass = blackhole.mass;
+//            blackhole2._mass = blackhole.mass;
+//            blackhole2.srcrect.x = 180;
+//            blackhole2.srcrect.y = 303;
+//            blackhole2.srcrect.h = 75;
+//            blackhole2.srcrect.w = 75;
+//            blackhole2.init(blackhole.texture);
+//            blackhole2.sizeX = blackholeradius;
+//            blackhole2.sizeY = blackholeradius;
+//            blackhole2.sizeZ = blackholeradius;
+//            blackhole2.posX = 0.0;
+//            blackhole2.posY = 0.0;
+//            blackhole2.posZ = -orbitdh;
+//            blackhole2.movementworldY = -orbitvbh;
+//            blackhole2.movementrotation = M_PI * 0.1;
+//            blackhole2.draw = true;
+
+            double heavyplanetmass = planetmass;
+            double orbitdp = 4;
+            double orbitvp = OrbitalV(Gconstant,orbitdp*1.0, 1.0)*1.0;
+            planets.at(0)->mass = heavyplanetmass;
+            planets.at(0)->_mass = heavyplanetmass;
+            planets.at(0)->srcrect.x = 152;
+            planets.at(0)->srcrect.y = 96;
+            planets.at(0)->srcrect.h = 32;
+            planets.at(0)->srcrect.w = 32;
+            planets.at(0)->init(blackhole.texture);
+            planets.at(0)->sizeX = planetradius/(48/32);
+            planets.at(0)->sizeY = planetradius/(48/32);
+            planets.at(0)->sizeZ = planetradius/(48/32);
+            planets.at(0)->posX = 0.0;
+            planets.at(0)->posY = orbitdp;
+            planets.at(0)->posZ = 0.0;
+            planets.at(0)->movementworldZ = orbitvp;
+            planets.at(0)->movementrotation = M_PI * 2.0;
+            planets.at(0)->draw = true;
+
+            planets.at(1)->mass = heavyplanetmass/1;
+            planets.at(1)->_mass = heavyplanetmass/1;
+            planets.at(1)->srcrect.x = 144;
+            planets.at(1)->srcrect.y = 476;
+            planets.at(1)->srcrect.h = 32;
+            planets.at(1)->srcrect.w = 32;
+            planets.at(1)->init(blackhole.texture);
+            planets.at(1)->sizeX = planetradius/(48/32);
+            planets.at(1)->sizeY = planetradius/(48/32);
+            planets.at(1)->sizeZ = planetradius/(48/32);
+            planets.at(1)->posX = 0.0;
+            planets.at(1)->posY = -orbitdp;
+            planets.at(1)->posZ = 0.0;
+            planets.at(1)->movementworldZ = -orbitvp;
+            planets.at(1)->movementrotation = M_PI * 1.5;
+            planets.at(1)->draw = true;
+
+            planets.at(2+0)->mass = heavyplanetmass/1;
+            planets.at(2+0)->_mass = heavyplanetmass/1;
+            planets.at(2+0)->srcrect.x = 112;
+            planets.at(2+0)->srcrect.y = 0;
+            planets.at(2+0)->srcrect.h = 32;
+            planets.at(2+0)->srcrect.w = 32;
+            planets.at(2+0)->init(blackhole.texture);
+            planets.at(2+0)->sizeX = planetradius/(48/32);
+            planets.at(2+0)->sizeY = planetradius/(48/32);
+            planets.at(2+0)->sizeZ = planetradius/(48/32);
+            planets.at(2+0)->posX = 0.0;
+            planets.at(2+0)->posY = 0.0;
+            planets.at(2+0)->posZ = orbitdp*1.0;
+            planets.at(2+0)->movementworldY = -orbitvp;
+            planets.at(2+0)->movementrotation = M_PI * 1.0;
+            planets.at(2+0)->draw = true;
+
+            planets.at(2+1)->mass = heavyplanetmass/1;
+            planets.at(2+1)->_mass = heavyplanetmass/1;
+            planets.at(2+1)->srcrect.x = 144;
+            planets.at(2+1)->srcrect.y = 0;
+            planets.at(2+1)->srcrect.h = 32;
+            planets.at(2+1)->srcrect.w = 32;
+            planets.at(2+1)->init(blackhole.texture);
+            planets.at(2+1)->sizeX = planetradius/(48/32);
+            planets.at(2+1)->sizeY = planetradius/(48/32);
+            planets.at(2+1)->sizeZ = planetradius/(48/32);
+            planets.at(2+1)->posX = 0.0;
+            planets.at(2+1)->posY = 0.0;
+            planets.at(2+1)->posZ = -orbitdp*1.0;
+            planets.at(2+1)->movementworldY = orbitvp;
+            planets.at(2+1)->movementrotation = M_PI * 0.5;
+            planets.at(2+1)->draw = true;
+
+            spaceship.reset();
+            spaceship.mass = heavyplanetmass/2.0;
+            spaceship.srcrect.x = 96;
+            spaceship.srcrect.y = 380;
+            spaceship.srcrect.h = meteorheight;
+            spaceship.srcrect.w = meteorwidth;
+            spaceship.init(blackhole.texture);
+            spaceship.sizeX = planetradius;
+            spaceship.sizeY = planetradius;
+            spaceship.sizeZ = planetradius;
+            spaceship.posX = 0.0;
+            spaceship.posY = 0.0;
+            spaceship.posZ = orbitdp * 2.0;
+            spaceship.movementworldY = 0.0;//1.0/std::sqrt(2.0);
+            spaceship.movementrotation = 0.0;
+
+        }
+            break;
     }
 
-    const int backgroundsize = 300;
+    const int backgroundsize = gameworldsize;
 
     for (size_t i = 0; i < nrofbackgroundstars; i++)
     {
@@ -810,12 +964,22 @@ void Game::update(double deltatime)
 	        camera.update(deltatime);
 	        blackhole.update(deltatime);
 	        blackhole2.update(deltatime);
+	        bool isoutside = false;
+	        int planetsalive = 0;
 	        for (auto & p:planets)
             {
 	            p->update(deltatime);
+	            if (abs(p->posY) > gameworldsize/4 || abs(p->posZ) > gameworldsize/4)
+	                isoutside = true;
+	            if (p->draw)
+	                planetsalive++;
             }
 	        spaceship.update(deltatime);
-	        engineplume.posY = spaceship.posY;
+            if (abs(spaceship.posY) > gameworldsize/4 || abs(spaceship.posZ) > gameworldsize/4)
+                isoutside = true;
+            if (isoutside)
+                ResetGame();
+        engineplume.posY = spaceship.posY;
 	        engineplume.posX = spaceship.posX;
 	        engineplume.posZ = spaceship.posZ;
 	        engineplume.rotation = spaceship.rotation;
@@ -852,24 +1016,31 @@ void Game::update(double deltatime)
             // Reset game
             this->ResetGame();
         }
+        if (planetsalive <= 0)
+        {
+            // Advance to next level
+            level++;
+            if (level < 4)
+                this->ResetGame();
+        }
 	} else if(showtitlescreen)
 	{
 		titlescreentimer -= deltatime;
 		if (titlescreentimer <= 0)
 		{
 			// Show instructions
-			get_text_and_rect(renderer, 0, 0, "Level 1", font, &fonttexture1, &fontrect1);
-			get_text_and_rect(renderer, 0, fontrect1.y + fontrect1.h, "Lives 3", font, &fonttexture2, &fontrect2);
-			get_text_and_rect(renderer, 0, SCREENHEIGHT - fontrect1.h, "IAS: km/h", font, &fonttexture3, &fontrect3);
-			get_text_and_rect(renderer, (SCREENWIDTH / 2) - fontrect1.w, SCREENHEIGHT - fontrect1.h, "ALT: m", font, &fonttexture4, &fontrect4);
-			get_text_and_rect(renderer, (SCREENWIDTH - fontrect1.w), SCREENHEIGHT - fontrect1.h, "DIST: m", font, &fonttexture5, &fontrect5);
-			get_text_and_rect(renderer, (SCREENWIDTH / 2) - fontrect1.w, (SCREENHEIGHT / 2) - fontrect1.h, "Press R to start", font, &fonttexture6, &fontrect6);
-			get_text_and_rect(renderer, (SCREENWIDTH / 2) - (fontrect1.w / 1.0), (SCREENHEIGHT / 2) - (fontrect1.h * 2.0), "Press Q to quit", font, &fonttexture7, &fontrect7);
+//			get_text_and_rect(renderer, 0, 0, "Level 1", font, &fonttexture1, &fontrect1);
+//			get_text_and_rect(renderer, 0, fontrect1.y + fontrect1.h, "Lives 3", font, &fonttexture2, &fontrect2);
+//			get_text_and_rect(renderer, 0, SCREENHEIGHT - fontrect1.h, "IAS: km/h", font, &fonttexture3, &fontrect3);
+//			get_text_and_rect(renderer, (SCREENWIDTH / 2) - fontrect1.w, SCREENHEIGHT - fontrect1.h, "ALT: m", font, &fonttexture4, &fontrect4);
+//			get_text_and_rect(renderer, (SCREENWIDTH - fontrect1.w), SCREENHEIGHT - fontrect1.h, "DIST: m", font, &fonttexture5, &fontrect5);
+//			get_text_and_rect(renderer, (SCREENWIDTH / 2) - fontrect1.w, (SCREENHEIGHT / 2) - fontrect1.h, "Press R to start", font, &fonttexture6, &fontrect6);
+//			get_text_and_rect(renderer, (SCREENWIDTH / 2) - (fontrect1.w / 1.0), (SCREENHEIGHT / 2) - (fontrect1.h * 2.0), "Press Q to quit", font, &fonttexture7, &fontrect7);
 			showtitlescreen = false;
 		}
 		else {
 			// Show title screen
-			get_text_and_rect(renderer, (SCREENWIDTH* (titlescreentimer / (5.0 - 1.0)))-(fontrect8.w), (SCREENHEIGHT / 2)-fontrect8.h, "RB05SIM", font, &fonttexture8, &fontrect8);
+//			get_text_and_rect(renderer, (SCREENWIDTH* (titlescreentimer / (5.0 - 1.0)))-(fontrect8.w), (SCREENHEIGHT / 2)-fontrect8.h, "RB05SIM", font, &fonttexture8, &fontrect8);
 		}
 	}
 }
@@ -880,7 +1051,7 @@ void Game::render()
 	SDL_RenderClear(renderer);
 
 
-	DrawDistanceLines();
+//	DrawDistanceLines();
 	if (blackhole.texture) // Texture needs to be loaded first
 	{
         for (auto & a:backgroundstars)
@@ -920,8 +1091,8 @@ void Game::render()
 		char buff[1024];
 
 		std::sprintf(buff,"Score: %i",Consumer::getscore());
-        get_text_and_rect(renderer, 10, 10, buff, font, &fonttexture1, &fontrect1);
-        SDL_RenderCopy(renderer, fonttexture1, NULL, &fontrect1);
+//        get_text_and_rect(renderer, 10, 10, buff, font, &fonttexture1, &fontrect1);
+//        SDL_RenderCopy(renderer, fonttexture1, NULL, &fontrect1);
 		//	vviring.render(renderer, camera);
 	}
 
