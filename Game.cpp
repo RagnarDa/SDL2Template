@@ -787,6 +787,97 @@ void Game::ResetGame()
 
         }
             break;
+        case 4: {
+            // Planet in the middle of two black holes
+            planets.clear();
+            planets.push_back(new Planet());
+            //planets.push_back(new Planet());
+            for (auto p: planets) {
+                attractors.push_back(p);
+                p->pattractors = &attractors;
+                collidables.push_back(p);
+                p->pcollidables = &collidables;
+                objects.push_back(p);
+                p->reset();
+            }
+
+            double orbitdh = 2;
+            double orbitvbh = OrbitalV(Gconstant, orbitdh * 2.0, 0.5);
+            blackhole.reset();
+            blackhole.draw = true;
+            blackhole.mass = 1.0;
+            blackhole._mass = 1.0;
+            blackhole.srcrect.x = 180;
+            blackhole.srcrect.y = 303;
+            blackhole.srcrect.h = 75;
+            blackhole.srcrect.w = 75;
+            blackhole.init("simpleSpace_sheet.png", renderer);
+            blackhole.movementworldZ = 0.0;
+            blackhole.sizeX = blackholeradius;
+            blackhole.sizeY = blackholeradius;
+            blackhole.sizeZ = blackholeradius;
+            blackhole.posX = 0;
+            blackhole.posY = orbitdh;
+            blackhole.posZ = 0.0;
+            blackhole.movementworldZ = orbitvbh;
+            blackhole.movementrotation = -0.2 * M_PI;
+
+            blackhole2.reset();
+            blackhole2.draw = true;
+
+            blackhole2.reset();
+            blackhole2.mass = blackhole.mass;
+            blackhole2._mass = blackhole.mass;
+            blackhole2.srcrect.x = 180;
+            blackhole2.srcrect.y = 303;
+            blackhole2.srcrect.h = 75;
+            blackhole2.srcrect.w = 75;
+            blackhole2.init(blackhole.texture);
+            blackhole2.sizeX = blackholeradius;
+            blackhole2.sizeY = blackholeradius;
+            blackhole2.sizeZ = blackholeradius;
+            blackhole2.posX = 0.0;
+            blackhole2.posZ = 0.0;
+            blackhole2.posY = -orbitdh;
+            blackhole2.movementworldZ = -orbitvbh;
+            blackhole2.movementrotation = M_PI * 0.1;
+            blackhole2.draw = true;
+
+            double heavyplanetmass = planetmass;
+            double orbitdp = 4;
+            double orbitvp = OrbitalV(Gconstant, orbitdp * 1.0, 1.0) * 1.0;
+            planets.at(0)->mass = heavyplanetmass;
+            planets.at(0)->_mass = heavyplanetmass;
+            planets.at(0)->srcrect.x = 152;
+            planets.at(0)->srcrect.y = 96;
+            planets.at(0)->srcrect.h = 32;
+            planets.at(0)->srcrect.w = 32;
+            planets.at(0)->init(blackhole.texture);
+            planets.at(0)->sizeX = planetradius / (48 / 32);
+            planets.at(0)->sizeY = planetradius / (48 / 32);
+            planets.at(0)->sizeZ = planetradius / (48 / 32);
+            planets.at(0)->posX = 0.0;
+            planets.at(0)->posY = 0.0;
+            planets.at(0)->posZ = 0.0;
+            planets.at(0)->movementworldZ = 0.0;
+            planets.at(0)->movementrotation = M_PI * 0.0;
+            planets.at(0)->draw = true;
+            spaceship.reset();
+            spaceship.mass = heavyplanetmass/2.0;
+            spaceship.srcrect.x = 96;
+            spaceship.srcrect.y = 380;
+            spaceship.srcrect.h = meteorheight;
+            spaceship.srcrect.w = meteorwidth;
+            spaceship.init(blackhole.texture);
+            spaceship.sizeX = planetradius;
+            spaceship.sizeY = planetradius;
+            spaceship.sizeZ = planetradius;
+            spaceship.posX = 0.0;
+            spaceship.posY = 0.0;
+            spaceship.posZ = orbitdh * 2.0;
+            spaceship.movementworldY = 0.0;//1.0/std::sqrt(2.0);
+            spaceship.movementrotation = 0.0;
+        }
     }
 
     const int backgroundsize = gameworldsize;
