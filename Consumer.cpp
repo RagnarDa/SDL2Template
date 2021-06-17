@@ -23,10 +23,13 @@ void Consumer::update(double deltatime) {
             const double eventhorizon = 1.0;
             if (dist < eventhorizon)
             {
+                double xmovmementacc = deltatime * 100.0;
+                if (a->posX < xmovmementacc * 0.1)
+                    hasconsumtionoccured = true; // Play sound
                 a->sizeX *= 1.0 - (0.9 * deltatime);
                 a->sizeY *= 1.0 - (0.9 * deltatime);
                 a->sizeZ *= 1.0 - (0.9 * deltatime);
-                a->movementworldX += deltatime * 100.0;
+                a->movementworldX += xmovmementacc;
 //                a->movementworldY -= dy * deltatime * 0.5;
 //                a->movementworldZ -= dz * deltatime * 0.5;
                 a->posY -= dy * deltatime;
@@ -44,7 +47,6 @@ void Consumer::update(double deltatime) {
                             pobjects->erase(pobjects->begin() + o);
                             a->draw = false;
                             score++;
-                            hasconsumtionoccured = true; // Play sound
                         }
                     }
                 }

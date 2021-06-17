@@ -966,16 +966,18 @@ void Game::update(double deltatime)
 	        blackhole2.update(deltatime);
 	        bool isoutside = false;
 	        int planetsalive = 0;
-	        for (auto & p:planets)
+        const int gameworldlimit = gameworldsize / 4;
+        for (auto & p:planets)
             {
-	            p->update(deltatime);
-	            if (abs(p->posY) > gameworldsize/4 || abs(p->posZ) > gameworldsize/4)
-	                isoutside = true;
-	            if (p->draw)
-	                planetsalive++;
+	            if (p->draw) {
+                    p->update(deltatime);
+                    planetsalive++;
+                    if (abs(p->posY) > gameworldlimit || abs(p->posZ) > gameworldlimit)
+                        isoutside = true;
+                }
             }
 	        spaceship.update(deltatime);
-            if (abs(spaceship.posY) > gameworldsize/4 || abs(spaceship.posZ) > gameworldsize/4)
+            if (abs(spaceship.posY) > gameworldlimit || abs(spaceship.posZ) > gameworldlimit)
                 isoutside = true;
             if (isoutside)
                 ResetGame();
