@@ -1,7 +1,7 @@
 #include <SDL.h>
 #include <SDL_mixer.h>
 #include <SDL_image.h>
-#include <SDL_ttf.h>
+//#include <SDL_ttf.h>
 #include <SDL2_gfxPrimitives.h>
 #include <cstdio>
 #include <cstdlib>
@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
 
 
         game = new Game();
-        game->init("GameWindow", 1024, 640, false);
+        game->init("Space Cleaner - Planet Pool", 1024, 640, false);
 
         while (game->running())
         {
