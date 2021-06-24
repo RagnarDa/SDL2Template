@@ -19,6 +19,7 @@
 std::vector<Attractor*> attractors;
 std::vector<Collidable*> collidables;
 std::vector<Object*> objects;
+std::vector<Mergeable*> mergeables;
 Spaceship spaceship(planetmass/1);
 Object engineplume;
 std::vector<Planet*> planets;
@@ -224,6 +225,7 @@ void Game::ResetGame()
     attractors.clear();
     collidables.clear();
     objects.clear();
+    mergeables.clear();
     for (auto p: planets)
     {
         delete p;
@@ -253,6 +255,8 @@ void Game::ResetGame()
                 collidables.push_back(p);
                 p->pcollidables = &collidables;
                 objects.push_back(p);
+                p->pmergeables = &mergeables;
+                mergeables.push_back(p);
                 p->reset();
             }
             // Place black hole in middle of world
@@ -331,13 +335,14 @@ void Game::ResetGame()
                 collidables.push_back(p);
                 p->pcollidables = &collidables;
                 objects.push_back(p);
+                p->pmergeables = &mergeables;
+                mergeables.push_back(p);
                 p->reset();
             }
             // Stable three body system https://math.stackexchange.com/questions/1613765/simple-stable-n-body-orbits-in-the-plane-with-some-fixed-bodies-allowed
             double scale = 1;
             blackhole.reset();
             blackhole.mass = 4.0 * scale;
-            blackhole._mass = 4.0 * scale;
             blackhole.srcrect.x = 180;
             blackhole.srcrect.y = 303;
             blackhole.srcrect.h = 75;
@@ -356,7 +361,6 @@ void Game::ResetGame()
             blackhole2.draw = false;
 
             planets.at(0)->mass = 4.0 * scale;
-            planets.at(0)->_mass = 4.0 * scale;
             planets.at(0)->srcrect.x = 144;
             planets.at(0)->srcrect.y = 428;
             planets.at(0)->srcrect.h = meteorheight;
@@ -418,12 +422,13 @@ void Game::ResetGame()
                 collidables.push_back(p);
                 p->pcollidables = &collidables;
                 objects.push_back(p);
+                p->pmergeables = &mergeables;
+                mergeables.push_back(p);
                 p->reset();
             }
             // Stable three body system https://math.stackexchange.com/questions/1613765/simple-stable-n-body-orbits-in-the-plane-with-some-fixed-bodies-allowed
             blackhole.reset();
             blackhole.mass = 1.0;
-            blackhole._mass = 1.0;
             blackhole.srcrect.x = 180;
             blackhole.srcrect.y = 303;
             blackhole.srcrect.h = 75;
@@ -442,7 +447,6 @@ void Game::ResetGame()
             blackhole2.draw = false;
 
             planets.at(0)->mass = planetmass;
-            planets.at(0)->_mass = planetmass;
             planets.at(0)->srcrect.x = 52;
             planets.at(0)->srcrect.y = 340;
             planets.at(0)->srcrect.h = meteorheight;
@@ -460,7 +464,6 @@ void Game::ResetGame()
 
 
             planets.at(1)->mass = planetmass;
-            planets.at(1)->_mass = planetmass;
             planets.at(1)->srcrect.x = 144;
             planets.at(1)->srcrect.y = 428;
             planets.at(1)->srcrect.h = meteorheight;
@@ -508,6 +511,8 @@ void Game::ResetGame()
                 collidables.push_back(p);
                 p->pcollidables = &collidables;
                 objects.push_back(p);
+                p->pmergeables = &mergeables;
+                mergeables.push_back(p);
                 p->reset();
             }
 
@@ -515,7 +520,6 @@ void Game::ResetGame()
             double orbitvbh = OrbitalV(Gconstant,orbitdh*2.0, 1.0)*0.5;
             blackhole.reset();
             blackhole.mass = 1.0;
-            blackhole._mass = 1.0;
             blackhole.srcrect.x = 180;
             blackhole.srcrect.y = 303;
             blackhole.srcrect.h = 75;
@@ -534,7 +538,6 @@ void Game::ResetGame()
 
             blackhole2.reset();
             blackhole2.mass = blackhole.mass;
-            blackhole2._mass = blackhole.mass;
             blackhole2.srcrect.x = 180;
             blackhole2.srcrect.y = 303;
             blackhole2.srcrect.h = 75;
@@ -553,7 +556,6 @@ void Game::ResetGame()
             double orbitdp = 6.5;
             double orbitvp = OrbitalV(Gconstant,orbitdp*1.0, 2)*1.0;
             planets.at(0)->mass = planetmass/2;
-            planets.at(0)->_mass = planetmass/2;
             planets.at(0)->srcrect.x = 152;
             planets.at(0)->srcrect.y = 96;
             planets.at(0)->srcrect.h = 32;
@@ -570,7 +572,6 @@ void Game::ResetGame()
             planets.at(0)->draw = true;
 
             planets.at(1)->mass = planetmass/2;
-            planets.at(1)->_mass = planetmass/2;
             planets.at(1)->srcrect.x = 144;
             planets.at(1)->srcrect.y = 476;
             planets.at(1)->srcrect.h = 32;
@@ -587,7 +588,6 @@ void Game::ResetGame()
             planets.at(1)->draw = true;
 
             planets.at(2+0)->mass = planetmass/2;
-            planets.at(2+0)->_mass = planetmass/2;
             planets.at(2+0)->srcrect.x = 112;
             planets.at(2+0)->srcrect.y = 0;
             planets.at(2+0)->srcrect.h = 32;
@@ -604,7 +604,6 @@ void Game::ResetGame()
             planets.at(2+0)->draw = true;
 
             planets.at(2+1)->mass = planetmass/2;
-            planets.at(2+1)->_mass = planetmass/2;
             planets.at(2+1)->srcrect.x = 144;
             planets.at(2+1)->srcrect.y = 0;
             planets.at(2+1)->srcrect.h = 32;
@@ -653,6 +652,8 @@ void Game::ResetGame()
                 collidables.push_back(p);
                 p->pcollidables = &collidables;
                 objects.push_back(p);
+                p->pmergeables = &mergeables;
+                mergeables.push_back(p);
                 p->reset();
             }
 
@@ -661,7 +662,6 @@ void Game::ResetGame()
             blackhole.reset();
             blackhole.draw = true;
             blackhole.mass = 1.0;
-            blackhole._mass = 1.0;
             blackhole.srcrect.x = 180;
             blackhole.srcrect.y = 303;
             blackhole.srcrect.h = 75;
@@ -702,7 +702,6 @@ void Game::ResetGame()
             double orbitdp = 4;
             double orbitvp = OrbitalV(Gconstant,orbitdp*1.0, 1.0)*1.0;
             planets.at(0)->mass = heavyplanetmass;
-            planets.at(0)->_mass = heavyplanetmass;
             planets.at(0)->srcrect.x = 152;
             planets.at(0)->srcrect.y = 96;
             planets.at(0)->srcrect.h = 32;
@@ -719,7 +718,6 @@ void Game::ResetGame()
             planets.at(0)->draw = true;
 
             planets.at(1)->mass = heavyplanetmass/1;
-            planets.at(1)->_mass = heavyplanetmass/1;
             planets.at(1)->srcrect.x = 144;
             planets.at(1)->srcrect.y = 476;
             planets.at(1)->srcrect.h = 32;
@@ -736,7 +734,6 @@ void Game::ResetGame()
             planets.at(1)->draw = true;
 
             planets.at(2+0)->mass = heavyplanetmass/1;
-            planets.at(2+0)->_mass = heavyplanetmass/1;
             planets.at(2+0)->srcrect.x = 112;
             planets.at(2+0)->srcrect.y = 0;
             planets.at(2+0)->srcrect.h = 32;
@@ -753,7 +750,6 @@ void Game::ResetGame()
             planets.at(2+0)->draw = true;
 
             planets.at(2+1)->mass = heavyplanetmass/1;
-            planets.at(2+1)->_mass = heavyplanetmass/1;
             planets.at(2+1)->srcrect.x = 144;
             planets.at(2+1)->srcrect.y = 0;
             planets.at(2+1)->srcrect.h = 32;
@@ -798,6 +794,8 @@ void Game::ResetGame()
                 collidables.push_back(p);
                 p->pcollidables = &collidables;
                 objects.push_back(p);
+                p->pmergeables = &mergeables;
+                mergeables.push_back(p);
                 p->reset();
             }
 
@@ -806,7 +804,6 @@ void Game::ResetGame()
             blackhole.reset();
             blackhole.draw = true;
             blackhole.mass = 1.0;
-            blackhole._mass = 1.0;
             blackhole.srcrect.x = 180;
             blackhole.srcrect.y = 303;
             blackhole.srcrect.h = 75;
@@ -827,7 +824,6 @@ void Game::ResetGame()
 
             blackhole2.reset();
             blackhole2.mass = blackhole.mass;
-            blackhole2._mass = blackhole.mass;
             blackhole2.srcrect.x = 180;
             blackhole2.srcrect.y = 303;
             blackhole2.srcrect.h = 75;
@@ -847,7 +843,6 @@ void Game::ResetGame()
             double orbitdp = 4;
             double orbitvp = OrbitalV(Gconstant, orbitdp * 1.0, 1.0) * 1.0;
             planets.at(0)->mass = heavyplanetmass;
-            planets.at(0)->_mass = heavyplanetmass;
             planets.at(0)->srcrect.x = 152;
             planets.at(0)->srcrect.y = 96;
             planets.at(0)->srcrect.h = 32;

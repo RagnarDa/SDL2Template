@@ -11,10 +11,10 @@
 
 class Collidable{
 public:
-    Collidable(Object * obj, double mass);
+    Collidable(Object * obj, double * mass);
     void update(double deltatime);
 
-    double _mass;
+    double * _mass;
     std::vector<Collidable*> * pcollidables;
     Object * pobject;
     static bool CollisionHasOccured();

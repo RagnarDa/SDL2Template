@@ -10,10 +10,10 @@
 
 class Consumer{
 public:
-    Consumer(Object * obj, double mass);
+    Consumer(Object * obj, double * mass);
     void update(double deltatime);
 
-    double _mass;
+    double * _mass;
     std::vector<Object*> * pobjects;
     Object * pobject;
     static int getscore();

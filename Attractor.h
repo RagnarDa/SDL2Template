@@ -11,10 +11,10 @@
 
 class Attractor{
 public:
-    Attractor(Object * obj, double mass);
+    Attractor(Object * obj, double * mass);
     void update(double deltatime);
     std::vector<Attractor*> * pattractors;
-    double mass;
+    double * mass;
     Object * pobject;
 };
 

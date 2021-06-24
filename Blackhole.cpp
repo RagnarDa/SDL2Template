@@ -4,7 +4,7 @@
 
 #include "Blackhole.h"
 
-Blackhole::Blackhole(double mass) : Attractor(this, mass), Consumer(this, mass) {}
+Blackhole::Blackhole(double mass) : mass(mass), Attractor(this, &this->mass), Consumer(this, &this->mass) {}
 
 void Blackhole::update(double deltatime) {
     if (!draw)
