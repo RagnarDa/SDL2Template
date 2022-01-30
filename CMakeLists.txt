@@ -14,7 +14,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(SOURCES main.cpp Game.cpp Game.h Object.cpp Object.h rotmat.cpp rotmat.h vector.cpp vector.h
 		TextureManager.cpp TextureManager.h Camera.h Camera.cpp screenobject.cpp screenobject.h)
-add_executable(SDLTemplate ${SOURCES} Attractor.cpp Attractor.h Collidable.cpp Collidable.h Planet.cpp Planet.h Spaceship.cpp Spaceship.h Blackhole.cpp Blackhole.h Consumer.cpp Consumer.h Backgroundstar.cpp Backgroundstar.h)
+add_executable(SDLTemplate ${SOURCES} Attractor.cpp Attractor.h Collidable.cpp Collidable.h Planet.cpp Planet.h Spaceship.cpp Spaceship.h Blackhole.cpp Blackhole.h Consumer.cpp Consumer.h Backgroundstar.cpp Backgroundstar.h "Mergeable.cpp" "Mergeable.h"  )
 add_library(${CMAKE_PROJECT_NAME}_lib STATIC ${SOURCES})
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 add_subdirectory(sdl-gpu)

@@ -7,8 +7,8 @@
 #include <cassert>
 bool collisionhasoccured = false;
 
-Collidable::Collidable(Object * obj, double mass) : pobject(obj), _mass(mass){
-    assert(mass>0);
+Collidable::Collidable(Object * obj, double * mass) : pobject(obj), _mass(mass){
+    //assert(*mass>0);
 }
 
 void Collidable::update(double deltatime) {
@@ -60,11 +60,11 @@ void Collidable::update(double deltatime) {
                 dx = a->pobject->posX - this->pobject->posX;
                 dy = a->pobject->posY - this->pobject->posY;
                 dz = a->pobject->posZ - this->pobject->posZ;
-                double p = 2.0 * (nx * dx + ny * dy + nz * dz) / (a->_mass + this->_mass);
+                double p = 2.0 * (nx * dx + ny * dy + nz * dz) / (*a->_mass + *this->_mass);
                 p *= 0.1; // Softness
-                this->pobject->movementworldX = this->pobject->movementworldX - p * a->_mass * nx;
-                this->pobject->movementworldY = this->pobject->movementworldY - p * a->_mass * ny;
-                this->pobject->movementworldZ = this->pobject->movementworldZ - p * a->_mass * nz;
+                this->pobject->movementworldX = this->pobject->movementworldX - p * *a->_mass * nx;
+                this->pobject->movementworldY = this->pobject->movementworldY - p * *a->_mass * ny;
+                this->pobject->movementworldZ = this->pobject->movementworldZ - p * *a->_mass * nz;
      //           a->pobject->movementworldX = a->pobject->movementworldX - p * this->_mass * nx;
        //         a->pobject->movementworldY = a->pobject->movementworldY - p * this->_mass * ny;
          //       a->pobject->movementworldZ = a->pobject->movementworldZ - p * this->_mass * nz;
@@ -73,8 +73,8 @@ void Collidable::update(double deltatime) {
                 // http://hyperphysics.phy-astr.gsu.edu/hbase/mi.html
                 // Calculate moment of inertia
                 // Assume sphere
-                double I_a = (2.0/5.0)*a->_mass*radia*radia;
-                double I_b = (2.0/5.0)*this->_mass*radib*radib;
+                double I_a = (2.0/5.0)**a->_mass*radia*radia;
+                double I_b = (2.0/5.0)**this->_mass*radib*radib;
                 double tanva = radia * a->pobject->movementrotation;
                 double tanvb = radib * this->pobject->movementrotation;
                 double A_a = tanva - tanvb;
@@ -96,9 +96,9 @@ void Collidable::update(double deltatime) {
 
                 // Hacky but seems to work
                 // circumference = radius * pi * 2
-                double prot = 2.0 * (tanva + tanvb) / (a->_mass + this->_mass);
+                double prot = 2.0 * (tanva + tanvb) / (*a->_mass + *this->_mass);
                 prot *= 1.0;
-                this->pobject->movementrotation -= prot * a->_mass;
+                this->pobject->movementrotation -= prot * *a->_mass;
                 //a->pobject->movementrotation -= prot * this->_mass;
 
                 // For playing sound

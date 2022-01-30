@@ -8,7 +8,7 @@
 int score = 0;
 bool hasconsumtionoccured = false;
 
-Consumer::Consumer(Object * obj, double mass):pobject(obj), _mass(mass) {
+Consumer::Consumer(Object * obj, double * mass):pobject(obj), _mass(mass) {
 }
 
 void Consumer::update(double deltatime) {

@@ -13,6 +13,7 @@ class Spaceship : public Object, public Attractor, public Collidable {
 public:
     Spaceship(double mass);
     void update(double deltatime);
+    double mass;
 };
 
 

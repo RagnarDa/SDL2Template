@@ -4,7 +4,7 @@
 
 #include "Spaceship.h"
 
-Spaceship::Spaceship(double mass) : Attractor(this, mass), Collidable(this, mass) {
+Spaceship::Spaceship(double mass) : mass(mass), Attractor(this, &this->mass), Collidable(this, &this->mass) {
 }
 
 void Spaceship::update(double deltatime) {

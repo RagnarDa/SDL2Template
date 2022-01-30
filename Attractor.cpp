@@ -7,7 +7,7 @@
 #include <cmath>
 #include <cassert>
 
-Attractor::Attractor(Object * obj, double mass):pobject(obj), mass(mass) {
+Attractor::Attractor(Object * obj, double * mass):pobject(obj), mass(mass) {
 }
 
 void Attractor::update(double deltatime) {
@@ -21,7 +21,7 @@ void Attractor::update(double deltatime) {
             double dist = std::sqrt(dx*dx+dy*dy+dz*dz);
 //            if (dx == 0 || dy == 0 || dz == 0 || dist == 0)
 //                continue;
-            double magi = a->mass/(dist*dist*dist);
+            double magi = *a->mass/(dist*dist*dist);
             this->pobject->movementworldX += magi * dx * deltatime;
             this->pobject->movementworldY += magi * dy * deltatime;
             this->pobject->movementworldZ += magi * dz * deltatime;

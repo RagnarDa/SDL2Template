@@ -14,6 +14,7 @@ class Blackhole : public Object, public Attractor, public Consumer {
 public:
     Blackhole(double mass);
     void update(double deltatime);
+    double mass;
 };
 
 
