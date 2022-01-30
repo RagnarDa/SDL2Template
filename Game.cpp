@@ -15,6 +15,9 @@
 #endif
 #include <cassert>
 #include <array>
+#include "imgui.h"
+#include "imgui_impl_sdl.h"
+#include "imgui_impl_sdlrenderer.h"
 
 std::vector<Attractor*> attractors;
 std::vector<Collidable*> collidables;
@@ -51,6 +54,11 @@ double alpha = ((2.0/180.0)*M_PI);
 double robottimer = 0;
 bool showtitlescreen = false;
 double titlescreentimer = 6.1; // Break in music happens exactly then
+
+// ImgGUI state
+bool show_demo_window = true;
+bool show_another_window = false;
+ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 // TODO: Move to own class obviously
 void DrawCircle(SDL_Renderer * renderer, int32_t centreX, int32_t centreY, int32_t radius)
@@ -185,7 +193,22 @@ void Game::init(const char* title, int width, int height, bool fullscreen)
 //	SDL_Surface * tmprobot_surface = IMG_Load("planet.png");
 //	robot_tex = SDL_CreateTextureFromSurface(renderer,tmprobot_surface);
 //	SDL_FreeSurface(tmprobot_surface);
-	
+
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsClassic();
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplSDL2_InitForSDLRenderer(window);
+    ImGui_ImplSDLRenderer_Init(renderer);
+
 	ResetGame();
 
 	
@@ -958,6 +981,9 @@ void Game::handleEvents()
 
 	SDL_PollEvent(&event);
 
+    // Imgui event processing
+    ImGui_ImplSDL2_ProcessEvent(&event);
+
 	switch (event.type)
 	{
 	case SDL_QUIT :
@@ -1148,7 +1174,7 @@ void Game::update(double deltatime)
 
 void Game::render()
 {
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+    SDL_SetRenderDrawColor(renderer, (Uint8)(clear_color.x * 255), (Uint8)(clear_color.y * 255), (Uint8)(clear_color.z * 255), (Uint8)(clear_color.w * 255));
 	SDL_RenderClear(renderer);
 
 
@@ -1205,6 +1231,51 @@ void Game::render()
 	} else {
 	}
 
+    // Start the Dear ImGui frame
+    ImGui_ImplSDLRenderer_NewFrame();
+    ImGui_ImplSDL2_NewFrame(window);
+    ImGui::NewFrame();
+
+    // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
+    if (show_demo_window)
+        ImGui::ShowDemoWindow(&show_demo_window);
+
+    // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
+    {
+        static float f = 0.0f;
+        static int counter = 0;
+
+        ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+        ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+        ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+        ImGui::Checkbox("Another Window", &show_another_window);
+
+        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+        ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+
+        if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+            counter++;
+        ImGui::SameLine();
+        ImGui::Text("counter = %d", counter);
+
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        ImGui::End();
+    }
+
+    // 3. Show another simple window.
+    if (show_another_window)
+    {
+        ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+        ImGui::Text("Hello from another window!");
+        if (ImGui::Button("Close Me"))
+            show_another_window = false;
+        ImGui::End();
+    }
+
+    // Rendering
+    ImGui::Render();
+    ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
 
 	SDL_RenderPresent(renderer);
 }
@@ -1289,8 +1360,14 @@ void Game::clean()
 	    p->~Planet();
     }
 	spaceship.~Spaceship();
- Mix_FreeChunk(pong);
-    Mix_FreeChunk(suck);	
+    Mix_FreeChunk(pong);
+    Mix_FreeChunk(suck);
+
+    // Cleanup imgui
+    ImGui_ImplSDLRenderer_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
+
 	if (renderer) {
 		SDL_DestroyRenderer(renderer);
 	}

@@ -1,9 +1,9 @@
 # Its assumed you are using vcpkg
 # so add -DCMAKE_TOOLCHAIN_FILE=[vcpkg root]\scripts\buildsystems\vcpkg.cmake
-# on windows run .\vcpkg install sdl2:x64-windows sdl2-image:x64-windows sdl2-ttf:x64-windows SDL2-mixer[mpg123]:x64-windows SDL2-gfx:x64-windows
+# on windows run .\vcpkg install sdl2:x64-windows sdl2-image:x64-windows sdl2-ttf:x64-windows SDL2-mixer[mpg123]:x64-windows SDL2-gfx:x64-windows "imgui[sdl2-binding]" "imgui[sdl2-renderer-binding]" --recursex
 # on macos run:
 # bash
-# ./vcpkg install sdl2:x64-osx sdl2-image:x64-osx sdl2-ttf:x64-osx sdl2-mixer[mpg123]:x64-osx sdl2-gfx:x64-osx
+# ./vcpkg install sdl2:x64-osx sdl2-image:x64-osx sdl2-ttf:x64-osx sdl2-mixer[mpg123]:x64-osx sdl2-gfx:x64-os "imgui[sdl2-binding]" "imgui[sdl2-renderer-binding]" --recursex
 
 
 cmake_minimum_required(VERSION 3.7)
@@ -17,6 +17,7 @@ set(SOURCES main.cpp Game.cpp Game.h Object.cpp Object.h rotmat.cpp rotmat.h vec
 add_executable(SDLTemplate ${SOURCES} Attractor.cpp Attractor.h Collidable.cpp Collidable.h Planet.cpp Planet.h Spaceship.cpp Spaceship.h Blackhole.cpp Blackhole.h Consumer.cpp Consumer.h Backgroundstar.cpp Backgroundstar.h)
 add_library(${CMAKE_PROJECT_NAME}_lib STATIC ${SOURCES})
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+add_subdirectory(sdl-gpu)
 
 # Enable testing for the project
 #enable_testing()
@@ -54,8 +55,11 @@ else()
 	find_package(sdl2-mixer REQUIRED)
 	find_package(sdl2-gfx REQUIRED)
 	#find_package(mpg123 CONFIG REQUIRED)
+
+	find_package(imgui CONFIG REQUIRED)
+
     #include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS} ${SDL2TTF_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/include)
-	set(libraries SDL2::SDL2main SDL2::SDL2-static SDL2::SDL2_image SDL2::SDL2_mixer SDL2::SDL2_gfx)
+	set(libraries SDL2::SDL2main SDL2::SDL2-static SDL2::SDL2_image SDL2::SDL2_mixer SDL2::SDL2_gfx imgui::imgui)
     target_link_libraries(SDLTemplate ${libraries})# ${CMAKE_SOURCE_DIR}/lib/libgmock.a ${CMAKE_SOURCE_DIR}/lib/libgtest.a)
 	target_link_libraries(${CMAKE_PROJECT_NAME}_lib ${libraries})
 	
